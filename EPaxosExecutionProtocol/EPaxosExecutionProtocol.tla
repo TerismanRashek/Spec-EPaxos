@@ -1,4 +1,4 @@
-    ----------------------------- MODULE EpaxosSpec -----------------------------
+    ----------------------------- MODULE EPaxosExecutionProtocol -----------------------------
 
     EXTENDS FiniteSets, Sequences, Naturals, TLC
 
