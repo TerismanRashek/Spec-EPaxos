@@ -1,0 +1,68 @@
+------------------------------ MODULE SMRspec ------------------------------
+EXTENDS Naturals, Sequences, FiniteSets, TLC
+
+CONSTANTS
+  Proc,        \* Set of processes
+  Cmd,         \* Set of unique commands
+  Conflict     \* Subset of Cmd × Cmd: symmetric, irreflexive
+
+ASSUME
+  /\ \A c \in Cmd: <<c, c>> \notin Conflict
+  /\ \A c, d \in Cmd: <<c, d>> \in Conflict => <<d, c>> \in Conflict
+
+VARIABLES
+  submitted,    \* Set of commands that have been submitted
+  executed,     \* Map from Proc to set of executed commands
+  order         \* Sequence of conflicting commands
+
+vars == <<submitted, executed, order>>
+
+Init ==
+  /\ submitted = {}
+  /\ executed = [p \in Proc |-> {}]
+  /\ order = <<>>
+
+Submit(p, c) ==
+  /\ p \in Proc
+  /\ c \in Cmd
+  /\ c \notin submitted
+  /\ submitted' = submitted \cup {c}
+  /\ UNCHANGED <<executed, order>>
+
+IsConflicting(c1, c2) ==
+  <<c1, c2>> \in Conflict
+
+CommandSeen(c) ==
+  \E i \in 1..Len(order): order[i] = c
+
+CommandIndex(c) ==
+  CHOOSE i \in 1..Len(order): order[i] = c
+
+CanExecute(p, c) ==
+  /\ c \in submitted
+  /\ c \notin executed[p]
+  /\ \A d \in executed[p]:
+        IsConflicting(c, d) =>
+          CommandSeen(c) /\ CommandSeen(d) /\ CommandIndex(d) < CommandIndex(c)
+
+Execute(p, c) ==
+  /\ p \in Proc
+  /\ c \in Cmd
+  /\ CanExecute(p, c)
+  /\ executed' = [executed EXCEPT ![p] = @ \cup {c}]
+  /\ IF ~CommandSeen(c)
+        THEN order' = Append(order, c)
+        ELSE order' = order
+  /\ UNCHANGED submitted
+
+Next ==
+  \E p \in Proc:
+    \E c \in Cmd:
+       /\ \/ (Submit(p, c) /\ Print(<<"Submit", p, c >> ,TRUE)) 
+          \/ (Execute(p, c) /\ Print(<<"Execute", p, c >> ,TRUE))
+       /\ Print(executed ,TRUE)
+
+Spec ==
+  Init /\ [][Next]_vars
+
+=============================================================================

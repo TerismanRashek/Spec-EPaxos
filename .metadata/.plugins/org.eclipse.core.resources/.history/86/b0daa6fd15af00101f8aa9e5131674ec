@@ -1,0 +1,70 @@
+------------------------------ MODULE SMRspec ------------------------------
+
+EXTENDS Naturals, Sequences, FiniteSets
+
+CONSTANTS
+  Proc,        \* Set of processes
+  Cmd,         \* Set of unique commands
+  Conflict     \* Conflict ⊆ Cmd × Cmd, symmetric, irreflexive
+
+ASSUME \* Conflict is symmetric and irreflexive
+  \A c \in Cmd: ~(<<c, c>> \in Conflict)
+  /\ \A c, d \in Cmd: <<c, d>> \in Conflict => <<d, c>> \in Conflict
+
+VARIABLES
+  submitted,    \* submitted ⊆ Cmd: Set of submitted commands
+  executed,     \* executed[p] ⊆ Cmd: commands executed by process p
+  order         \* A total order of conflicting commands: Seq(Cmd)
+
+vars == <<submitted, executed, order>>
+
+Init ==
+  /\ submitted = {}
+  /\ executed = [p \in Proc |-> {}]
+  /\ order = <<>>
+
+Submit(p, c) ==
+  /\ p \in Proc
+  /\ c \in Cmd
+  /\ c \notin submitted
+  /\ submitted' = submitted \cup {c}
+  /\ UNCHANGED <<executed, order>>
+
+CanExecute(p, c) ==
+  /\ c \in submitted
+  /\ c \notin executed[p]
+  /\ \A d \in executed[p]:
+      <<d, c>> \in Conflict => 
+        (Index(order, d) < Index(order, c))
+
+Execute(p, c) ==
+  /\ p \in Proc
+  /\ c \in Cmd
+  /\ CanExecute(p, c)
+  /\ executed' = [executed EXCEPT ![p] = @ \cup {c}]
+  /\ IF c \notin DOMAIN orderToSet(order) THEN
+        order' = Append(order, c)
+     ELSE
+        order' = order
+  /\ UNCHANGED submitted
+
+orderToSet(ord) ==
+  { ord[i] : i \in 1..Len(ord) }
+
+Index(ord, c) ==
+  CHOOSE i \in 1..Len(ord): ord[i] = c
+
+Next ==
+  \E p \in Proc, c \in Cmd:
+    Submit(p, c) \/ Execute(p, c)
+
+Spec ==
+  Init /\ [][Next]_vars
+
+=============================================================================
+
+
+=============================================================================
+\* Modification History
+\* Last modified Wed Oct 22 09:06:31 CEST 2025 by terisman
+\* Created Wed Oct 22 09:06:12 CEST 2025 by terisman

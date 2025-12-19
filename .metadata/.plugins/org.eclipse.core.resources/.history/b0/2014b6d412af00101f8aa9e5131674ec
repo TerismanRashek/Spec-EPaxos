@@ -1,0 +1,14 @@
+-------------------------------- MODULE Test --------------------------------
+EXTENDS Integers
+
+VARIABLE x
+
+Init == x = 0
+Next == x' = x + 1
+
+Spec == Init /\ [][Next]_x
+============================================================
+
+\* Modification History
+\* Last modified Wed Oct 22 08:41:39 CEST 2025 by terisman
+\* Created Wed Oct 22 08:39:43 CEST 2025 by terisman
