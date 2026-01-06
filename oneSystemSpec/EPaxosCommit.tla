@@ -1,0 +1,11 @@
+SPECIFICATION Spec
+
+
+CONSTANTS Procs = {p1, p2}
+CONSTANTS CmdIds = {1, 2}
+CONSTANTS UnknownDep = 0
+
+INVARIANT Invariants
+PROPERTY Liveness
+
+CHECK_DEADLOCK FALSE
