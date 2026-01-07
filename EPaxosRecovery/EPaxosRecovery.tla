@@ -38,16 +38,15 @@ AcceptMsg(p,q,b,id,c,D) ==
 CommitMsg(p,q,b,id,c,D) ==
     Message(TypeCommit,p,q,[b|->b,id|->id,cmdc|->c,depc|->D])
 
-WaitingMsg(p,q,id,k) ==
-    Message(TypeWaiting,p,q,[id|->id,k|->k])
+WaitingMsg(p,q,id,k,I) ==
+    Message(TypeWaiting,p,q,[id|->id,k|->k,I|->I])
 
 VARIABLES
     bal, abal,
     cmd, initCmd,
     dep, initDep,
     phase,
-    msgs,
-    waiting
+    msgs
 
 Init ==
     /\ bal = [p \in Proc |-> [id \in CmdIds |-> 0]]
@@ -58,7 +57,6 @@ Init ==
     /\ initDep = [p \in Proc |-> [id \in CmdIds |-> {}]]
     /\ phase = [p \in Proc |-> [id \in CmdIds |-> "none"]]
     /\ msgs = {}
-    /\ waiting = {}
 
 (***************************************************************************)
 (* 44–45 StartRecover                                                      *)
@@ -66,7 +64,7 @@ Init ==
 StartRecover(p,id) ==
     LET b == bal[p][id] + 1 IN
     /\ msgs' = msgs \cup { RecoverMsg(p,q,b,id) : q \in Proc }
-    /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase, waiting >>
+    /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase, bal >>
 
 (***************************************************************************)
 (* 46–49 HandleRecover                                                     *)
@@ -85,7 +83,7 @@ HandleRecover(m) ==
         { RecoverOKMsg(p,q,b,id,abal[p][id],
                        cmd[p][id],dep[p][id],initDep[p][id],
                        phase[p][id]) }
-    /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase, waiting >>
+    /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase >>
 
 (***************************************************************************)
 (* 50–63 HandleRecoverOK                                                   *)
@@ -140,69 +138,93 @@ HandleRecoverOK(p,id,b) ==
                         { Validate(p, q2, b, id, c, D) : q2 \in Q }
         )
 
-    /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase, waiting >>
+    /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase >>
 
 (***************************************************************************)
 (* 64–70 HandleValidateOK                                                 *)
 (***************************************************************************)
-HandleValidateOK(p,id,b,c,D) ==
-    LET Q ==
+HandleValidateOK(p, id, b, c, D) ==
+  LET Q ==
         { q \in Proc :
             \E m \in msgs :
-                m.type=TypeValidateOK /\ m.to=p /\ m.from=q /\
-                m.body.id=id /\ m.body.b=b }
-        OKs ==
+                m.type = TypeValidateOK /\ m.to = p /\ m.from = q /\
+                m.body.id = id /\ m.body.b = b }
+      OKs ==
         { m \in msgs :
-            m.type=TypeValidateOK /\ m.to=p /\ m.from \in Q /\
-            m.body.id=id /\ m.body.b=b }
-        I == UNION { m.body.Iq : m \in OKs }
-    IN
-    /\ Cardinality(Q) >= QuorumSize
-
-    /\ msgs' = msgs \ OKs \cup
+            m.type = TypeValidateOK /\ m.to = p /\ m.from \in Q /\
+            m.body.id = id /\ m.body.b = b }
+      I == UNION { m.body.Iq : m \in OKs }
+  IN
+  /\ Cardinality(Q) >= QuorumSize
+  /\ msgs' =
+       (msgs \ OKs) \cup
        IF I = {} THEN
-         { AcceptMsg(p,q,b,id,c,D) : q \in Proc }
+           { AcceptMsg(p, q, b, id, c, D) : q \in Proc }
+       ELSE IF (\E (id', committed) \in I : committed = "committed") \/
+                (Cardinality(Rmax) = Cardinality(Q) - e /\
+                 \E (id', _) \in I : initCoord[id'] \notin Q) THEN
+           { AcceptMsg(p, q, b, id, "Nop", {}) : q \in Proc }
        ELSE
-         { WaitingMsg(p,q,id,Cardinality(Q)) : q \in Proc }
+           { WaitingMsg(p, q, id, Cardinality(Rmax), I) : q \in Proc }
 
-    /\ waiting' =
-        IF I = {} THEN waiting ELSE waiting \cup {id}
+  /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase >>
 
-    /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase >>
 
 (***************************************************************************)
 (* 71–83 HandleWaitingMsg                                                  *)
 (***************************************************************************)
 HandleWaitingMsg(m) ==
-    /\ m \in msgs /\ m.type=TypeWaiting
+    /\ m \in msgs /\ m.type = TypeWaiting
     LET p == m.to
         id == m.body.id
         k == m.body.k
-        I ==
-        UNION { m2.body.Iq :
-            m2 \in msgs /\ m2.type=TypeValidateOK /\ m2.to=p /\ m2.body.id=id }
+        I == m.body.I
     IN
-    \/ (k > N - F - E
-        /\ msgs' =
-             (msgs \ {m}) \cup
-             { AcceptMsg(p,q,bal[p][id],id,"Nop",{}) : q \in Proc })
-
     \/ (\E x \in I :
-            phase[p][x[1]]="committed" /\
-            cmd[p][x[1]]#"Nop" /\ id \notin dep[p][x[1]]
+            phase[p][x[1]] = "committed" /\
+            cmd[p][x[1]] # "Nop" /\ id \notin dep[p][x[1]]
         /\ msgs' =
              (msgs \ {m}) \cup
-             { AcceptMsg(p,q,bal[p][id],id,"Nop",{}) : q \in Proc })
+             { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
 
     \/ (\A x \in I :
-            phase[p][x[1]]="committed" /\
-            (cmd[p][x[1]]="Nop" \/ id \in dep[p][x[1]])
+            phase[p][x[1]] = "committed" /\
+            (cmd[p][x[1]] = "Nop" \/ id \in dep[p][x[1]])
         /\ msgs' =
              (msgs \ {m}) \cup
-             { AcceptMsg(p,q,bal[p][id],id,cmd[p][id],dep[p][id])
+             { AcceptMsg(p, q, bal[p][id], id, cmd[p][id], dep[p][id])
                  : q \in Proc })
 
-    /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase, waiting >>
+    \/ (\E x \in I :
+            \E m2 \in msgs :
+                m2.type = TypeWaiting /\
+                m2.to = p /\
+                m2.body.id = x[1] /\
+                m2.body.k > n - f - e
+        /\ msgs' =
+             (msgs \ {m}) \cup
+             { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
+
+    \/ (\E m2 \in msgs :
+            m2.type = TypeRecoverOK /\
+            m2.to = p /\
+            m2.body.id = id /\
+            m2.from \notin Q /\
+            (m2.body.phase = "committed" \/
+             m2.body.phase = "accepted" \/
+             m2.from = initCoord[id])
+        /\ msgs' =
+            (msgs \ {m}) \cup
+            IF m2.body.phase = "committed" THEN
+                { CommitMsg(p, q, bal[p][id], id,
+                            m2.body.cmd, m2.body.dep) : q \in Proc }
+            ELSE IF m2.body.phase = "accepted" THEN
+                { AcceptMsg(p, q, bal[p][id], id,
+                            m2.body.cmd, m2.body.dep) : q \in Proc }
+            ELSE
+                { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
+
+    /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase >>
 
 (***************************************************************************)
 (* 84–90 HandleValidate                                                    *)
@@ -213,8 +235,9 @@ HandleValidate(m) ==
         id == m.body.id
         c == m.body.c
         D == m.body.D
+        b == m.body.b
     IN
-    /\ bal[p][id] = m.body.b
+    /\ bal[p][id] = b
     /\ cmd' = [cmd EXCEPT ![p][id]=c]
     /\ initCmd' = [initCmd EXCEPT ![p][id]=c]
     /\ initDep' = [initDep EXCEPT ![p][id]=D]
@@ -231,7 +254,7 @@ HandleValidate(m) ==
          (msgs \ {m}) \cup
          { ValidateOKMsg(p,m.from,m.body.b,id,I) }
 
-    /\ UNCHANGED << bal, abal, dep, phase, waiting >>
+    /\ UNCHANGED << bal, abal, dep, phase >>
 
 Next ==
     \/ \E p,id : StartRecover(p,id)
@@ -242,6 +265,6 @@ Next ==
     \/ \E m : HandleValidate(m)
 
 Spec ==
-    Init /\ [][Next]_<< bal,abal,cmd,initCmd,dep,initDep,phase,msgs,waiting >>
+    Init /\ [][Next]_<< bal,abal,cmd,initCmd,dep,initDep,phase,msgs >>
 
 =============================================================================
