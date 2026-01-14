@@ -14,6 +14,7 @@ TypeValidateOK  == "ValidateOK"
 TypeAccept      == "Accept"
 TypeCommit      == "Commit"
 TypeWaiting     == "Waiting"
+TypePostWaiting == "PostWaiting"
 
 Message(type, from, to, body) ==
     [ type |-> type, from |-> from, to |-> to, body |-> body ]
@@ -38,8 +39,11 @@ AcceptMsg(p,q,b,id,c,D) ==
 CommitMsg(p,q,b,id,c,D) ==
     Message(TypeCommit,p,q,[b|->b,id|->id,cmdc|->c,depc|->D])
 
-WaitingMsg(p,q,id,k,I) ==
-    Message(TypeWaiting,p,q,[id|->id,k|->k,I|->I])
+WaitingMsg(p,q,id,k) ==
+    Message(TypeWaiting,p,q,[id|->id,k|->k])
+
+PostWaitingMsg(p,id,I) ==
+    Message(TypePostWaiting,p,p,[id|->id,I|->I])
 
 VARIABLES
     bal, abal,
@@ -225,6 +229,63 @@ HandleWaitingMsg(m) ==
                 { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
 
     /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase >>
+                    
+HandlePostWaitingMsg(m) ==
+    /\ m \in msgs
+    /\ m.type = TypePostWaiting
+    LET p  == m.to
+        id == m.body.id
+        I  == m.body.I
+    IN
+    \/ (\E x \in I :
+            x[1] # id /\
+            x[2] = "committed" /\
+            cmd[p][x[1]] # "Nop" /\
+            id \notin dep[p][x[1]]
+        /\ msgs' =
+             (msgs \ {m}) \cup
+             { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
+
+    \/ (\A x \in I :
+        x[1] # id =>
+        (x[2] = "committed" /\
+         (cmd[p][x[1]] = "Nop" \/ id \in dep[p][x[1]]))
+        /\ msgs' =
+             (msgs \ {m}) \cup
+             { AcceptMsg(p, q, bal[p][id], id, cmd[p][id], dep[p][id])
+                 : q \in Proc })    
+
+    \/ (\E x \in I :
+            x[1] # id /\
+            \E m2 \in msgs :
+                m2.type = TypeWaiting /\
+                m2.to = p /\
+                m2.body.id = x[1] /\
+                m2.body.k > n - f - e
+        /\ msgs' =
+             (msgs \ {m}) \cup
+             { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
+
+    \/ (\E m2 \in msgs :
+            m2.type = TypeRecoverOK /\
+            m2.to = p /\
+            m2.body.id = id /\
+            m2.from \notin Q /\
+            (m2.body.phase = "committed" \/
+             m2.body.phase = "accepted" \/
+             m2.from = initCoord[id])
+        /\ msgs' =
+            (msgs \ {m}) \cup
+            IF m2.body.phase = "committed" THEN
+                { CommitMsg(p, q, bal[p][id], id,
+                            m2.body.cmd, m2.body.dep) : q \in Proc }
+            ELSE IF m2.body.phase = "accepted" THEN
+                { AcceptMsg(p, q, bal[p][id], id,
+                            m2.body.cmd, m2.body.dep) : q \in Proc }
+            ELSE
+                { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
+
+    /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase >>
 
 (***************************************************************************)
 (* 84–90 HandleValidate                                                    *)
@@ -262,6 +323,7 @@ Next ==
     \/ \E p,id,b : HandleRecoverOK(p,id,b)
     \/ \E p,id,b,c,D : HandleValidateOK(p,id,b,c,D)
     \/ \E m : HandleWaitingMsg(m)
+    \/ \E m : HandlePostWaitingMsg(m)
     \/ \E m : HandleValidate(m)
 
 Spec ==
