@@ -358,13 +358,16 @@ HandleRecoverOK(m) ==
                         /\ msgs' =
                             (msgs \ OKs) \cup
                             { CommitMsg(p, p2, b, id, n.body.cq, n.body.depq)
-                                : k \in U, p2 \in Proc })
+                                : p2 \in Proc })
 
-          \/ (\E q \in Proc : phase[q][id] = "accepted"
-              /\ msgs' =
-                  (msgs \ OKs) \cup
-                  { AcceptMsg(p, p2, b, id, m.body.cq, m.body.depq)
-                      : k \in U, p2 \in Proc })
+          \/ (\E q \in Proc :
+                   \E n \in U :
+                        n.from = q
+                        /\ n.phaseq = "accepted"
+                        /\ msgs' =
+                            (msgs \ OKs) \cup
+                            { AcceptMsg(p, p2, b, id, n.body.cq, n.body.depq)
+                                : p2 \in Proc })
 
           \/ (initCoord[id] \in Q
               /\ msgs' =
@@ -373,11 +376,15 @@ HandleRecoverOK(m) ==
 
           \/ (\E R \in SUBSET(Q) :
               /\ Cardinality(R) >= Cardinality(Q) - E
-              /\ \A q \in R : phase[q][id] = "preaccepted"
-              /\ msgs' =
-                  (msgs \ OKs) \cup
-                  { ValidateMsg(p, q, b, id, m.body.cq, m.body.depq, Q, Cardinality(R))
-                      : k \in U, q \in Proc })
+              /\ \A q \in R : 
+                    \E n \in U :
+                        n.from = q
+                        /\ n.phaseq = "preaccepted"
+                        /\ n.depq = n.initDepq
+                        /\ msgs' =
+                            (msgs \ OKs) \cup
+                            { ValidateMsg(p, q, b, id, n.body.cq, n.body.depq, Q, Cardinality(R))
+                                : k \in U, q \in Proc })
        /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
                         submitted, initCoord, recovered >>
 
