@@ -300,7 +300,7 @@ HandleCommit(m) ==
 StartRecover(p,id) ==
     /\ <<p,id>> \notin recovered
     /\ recovered' = recovered \cup { <<p,id>> }
-    /\ LET  b == bal[p][id] + 1
+    /\ LET  b == bal[p][id] + Cardinality(Proc) \* FIX IF + 0 THEN P else plus N
        IN
         /\ msgs' = msgs \cup { RecoverMsg(p,q,b,id) : q \in Proc }
         /\ bal' = [bal EXCEPT ![p][id] = b]
@@ -351,11 +351,14 @@ HandleRecoverOK(m) ==
        IN
        /\ bal[p][id] = b
        /\ Cardinality(Q) >= QuorumSize
-       /\ \/ (\E q \in Proc : phase[q][id] = "committed"
-              /\ msgs' =
-                  (msgs \ OKs) \cup
-                  { CommitMsg(p, p2, b, id, m.body.cq, m.body.depq)
-                      : k \in U, p2 \in Proc })
+       /\ \/ (\E q \in Proc :
+                   \E n \in U :
+                        n.from = q
+                        /\ n.phaseq = "committed"
+                        /\ msgs' =
+                            (msgs \ OKs) \cup
+                            { CommitMsg(p, p2, b, id, n.body.cq, n.body.depq)
+                                : k \in U, p2 \in Proc })
 
           \/ (\E q \in Proc : phase[q][id] = "accepted"
               /\ msgs' =
@@ -517,6 +520,8 @@ HandleValidate(m) ==
                { ValidateOKMsg(p, m.from, m.body.b, id, I, m.body.Q, m.body.Rmax) }
           /\ UNCHANGED << bal, abal, dep, phase,
                         submitted, initCoord, recovered >>
+
+
 
 Next ==
     \/ \E m \in msgs :
