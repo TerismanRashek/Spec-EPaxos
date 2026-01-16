@@ -79,12 +79,10 @@ CommitMsg(id, D, b, c, from, to) ==
  **********************************************************************)
 
 \* Conflict function: define according to application logic
-Conflicts(c1, c2) ==
-    \/ c1 = "NoCmd"
-    \/ c2 = "NoCmd" 
-    \/  /\ c1 \in Cmd
-        /\ c2 \in Cmd
-        /\ c1 # c2  
+Conflicts(c1, c2) == 
+    /\ c1 \in Cmd
+    /\ c2 \in Cmd
+    /\ c1 # c2  
 
 Quorum(Q) == Cardinality(Q) >= Cardinality(Proc) - F
 FastQuorum(Q) == Cardinality(Q) >= Cardinality(Proc) - E
@@ -101,7 +99,6 @@ ConflictingIds(p, c) ==
 
 Submit(p, id, c) ==
     /\ id \notin submitted
-    /\ phase[id][p] = "Initial"
     /\ LET D0 ==
            ConflictingIds(p, c)
        IN
@@ -127,7 +124,7 @@ HandlePreAccept(p, m) ==
        /\ LET Dfinal ==
               m.dep \cup Dp
           IN
-          /\ dep' = [dep EXCEPT ![m.id][p] = Dp]
+          /\ dep' = [dep EXCEPT ![m.id][p] = Dfinal]
           /\ msgs' = (msgs \cup {
                   PreAcceptOKMsg(m.id, dep'[m.id][p],
                                   m.bal, p, m.from)
