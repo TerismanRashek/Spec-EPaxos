@@ -75,8 +75,8 @@ RecoverOKMsg(q,p,b,id,ab,c,D,iD,ph) ==
 ValidateMsg(p,q,b,id,c,D,Q,Rmax) ==
     Message(TypeValidate,p,q,[b|->b,id|->id,c|->c,D|->D,Q|->Q,Rmax|->Rmax])
 
-ValidateOKMsg(q,p,b,id,I,Q,Rmax) ==
-    Message(TypeValidateOK,q,p,[b|->b,id|->id,Iq|->I,Q|->Q,Rmax|->Rmax])
+ValidateOKMsg(q,p,b,id,D,I) ==
+    Message(TypeValidateOK,q,p,[b|->b,id|->id,Iq|->I,D|->D])
 
 WaitingMsg(p,q,id,k) ==
     Message(TypeWaiting,p,q,[id|->id,k|->k])
@@ -92,11 +92,10 @@ VARIABLES
     initDep,       \* initDep[p][id] = dependencies sent by initial coordinator
     dep,           \* dep[p][id] = final dependency set (accepted or committed)
     abal,          \* abal[p][id] = last ballot where p accepted a slow-path value
-    msgs,           \* multiset of network messages
-    submitted,      \* map from <<p,id>> to number of times id has been submitted by p
-    \* submitted,  \* set of submitted ids
-    initCoord,       \* initCoord[id] = process that submitted id
-    recovered      \* set of (p,id) that have been recovered
+    msgs,          \* multiset of network messages
+    submitted,     \* set of submitted ids
+    initCoord,     \* initCoord[id] = process that submitted id
+    recovered      \* counter of times recoverd per (p,id)
 
 
 
@@ -109,9 +108,8 @@ Init ==
     /\ initDep = [p \in Proc |-> [id \in Id |-> {}]]
     /\ phase = [p \in Proc |-> [id \in Id |-> "Initial"]]
     /\ initCoord = [id \in Id |-> NoProc]
-    /\ submitted = [ id \in  Id |-> 0 ] 
-    \* /\ submitted = {}
-    /\ recovered = {}
+    /\ submitted = {}
+    /\ recovered = [p \in Proc |-> [id \in Id |-> 0]]
     /\ msgs = {}
 
 (**********************************************************************
@@ -119,18 +117,19 @@ Init ==
  **********************************************************************)
 
 \* Conflict function: define according to application logic
-Conflicts(id1, id2) == 
-    \/  /\ id1 \in Id
-        /\ id2 \in Id
-        /\ id1 # id2  
+
+Conflicts(c1, c2) ==
+    /\ c1 \in Cmd
+    /\ c2 \in Cmd
+    /\ c1 # c2
 
 Quorum(Q) == Cardinality(Q) >= Cardinality(Proc) - F
 FastQuorum(Q) == Cardinality(Q) >= Cardinality(Proc) - E
 
-ConflictingIds(p, id) ==
+ConflictingIds(p, c) ==
     { id2 \in Id :
         /\ phase[p][id2] # "Initial" 
-        /\ Conflicts(id2, id)
+        /\ Conflicts(cmd[p][id2], c)
     }
 
 (**********************************************************************
@@ -138,18 +137,6 @@ ConflictingIds(p, id) ==
  **********************************************************************)
 
 Submit(p, id, c) ==
-    /\ submitted[id] < 2 
-    /\ LET D0 == ConflictingIds(p, c)
-       IN
-          /\ msgs' = msgs \cup
-                { PreAcceptMsg(p, q, id, c, D0, 0)  : q \in Proc }
-          /\ submitted' =
-               [submitted EXCEPT
-                    ![id] = submitted[id] + 1]
-          /\ initCoord' = [initCoord EXCEPT ![id] = p]
-          /\ UNCHANGED << phase, bal, cmd, initCmd, initDep,
-                           dep, abal, recovered >>
-(* Submit(p, id, c) ==
     /\ id \notin submitted
     /\ LET D0 == ConflictingIds(p, c)
        IN
@@ -158,7 +145,7 @@ Submit(p, id, c) ==
           /\ submitted' = submitted \cup {id}
           /\ initCoord' = [initCoord EXCEPT ![id] = p]
           /\ UNCHANGED << phase, bal, cmd, initCmd, initDep,
-                           dep, abal, recovered >> *)
+                           dep, abal, recovered >> 
 
 HandlePreAccept(m) ==
     /\ m.type = TypePreAccept
@@ -231,7 +218,7 @@ HandleAccept(m) ==
     /\ m.type = TypeAccept
     /\ LET p  == m.to
            id == m.body.id
-           b  == m.body.b
+           b  == m.body.bal
        IN
        /\ bal[p][id] <= b
        /\ (bal[p][id] = b => phase[p][id] # "committed")
@@ -242,7 +229,7 @@ HandleAccept(m) ==
        /\ phase' = [phase EXCEPT ![p][id] = "accepted"]
        /\ msgs' =
            (msgs \ {m}) \cup
-           { AcceptOKMsg(p, m.from, b, id) }
+           { AcceptOKMsg(p, m.from, id, b) }
     /\ UNCHANGED << initCmd, initDep,
                       submitted, initCoord, recovered >>
 
@@ -277,7 +264,7 @@ HandleAcceptOK(m) ==
                        : q \in Proc
                 }) \ OKs
              /\ UNCHANGED << bal, phase, cmd, initCmd,
-                              initDep, dep, abal, submitted, initCoord >>
+                              initDep, dep, abal, submitted, initCoord, recovered >>
 
 HandleCommit(m) ==
     /\ m.type = TypeCommit
@@ -289,8 +276,8 @@ HandleCommit(m) ==
        /\ dep' = [dep EXCEPT ![p][id] = m.body.depc]
        /\ phase' = [phase EXCEPT ![p][id] = "committed"]
        /\ abal' = [abal EXCEPT ![p][id] = b]
-       /\ msgs' = msgs \ {m}
        /\ cmd' = [cmd EXCEPT ![p][id] = m.body.cmdc]
+       /\ msgs' = msgs \ {m}
        /\ UNCHANGED << bal, initCmd, initDep,
                         submitted, initCoord, recovered >>
 
@@ -298,9 +285,9 @@ HandleCommit(m) ==
 (* 44–45 StartRecover                                                      *)
 (***************************************************************************)
 StartRecover(p,id) ==
-    /\ <<p,id>> \notin recovered
-    /\ recovered' = recovered \cup { <<p,id>> }
-    /\ LET  b == bal[p][id] + Cardinality(Proc) \* FIX IF + 0 THEN P else plus N
+    /\ recovered[p][id] < 2
+    /\ recovered' = [recovered EXCEPT ![p][id] = recovered[p][id] + 1]
+    /\ LET  b == IF bal[p][id] = 0 THEN p ELSE bal[p][id] + Cardinality(Proc)
        IN
         /\ msgs' = msgs \cup { RecoverMsg(p,q,b,id) : q \in Proc }
         /\ bal' = [bal EXCEPT ![p][id] = b]
@@ -373,19 +360,66 @@ HandleRecoverOK(m) ==
               /\ msgs' =
                   (msgs \ OKs) \cup
                   { AcceptMsg(p, p2, b, id, "Nop", {}) : p2 \in Proc })
-
-          \/ (\E R \in SUBSET(Q) :
-              /\ Cardinality(R) >= Cardinality(Q) - E
-              /\ \A q \in R : 
-                    \E n \in U :
-                        n.from = q
-                        /\ n.phaseq = "preaccepted"
-                        /\ n.depq = n.initDepq
-                        /\ msgs' =
-                            (msgs \ OKs) \cup
-                            { ValidateMsg(p, q, b, id, n.body.cq, n.body.depq, Q, Cardinality(R))
-                                : k \in U, q \in Proc })
+          \/ (/\ LET ensembleR == SUBSET(Q)
+                 IN
+                 LET ensembleRvalable == {R \in ensembleR : 
+                                    Cardinality(R) >= Cardinality(Q) - E 
+                                    /\ \A q \in R : 
+                                            \E n \in U :
+                                                n.from = q
+                                                /\ n.phaseq = "preaccepted"
+                                                /\ n.depq = n.initDepq  }
+                 IN
+                 LET Rmax == CHOOSE R \in ensembleRvalable :
+                                  \A R2 \in ensembleRvalable :
+                                      Cardinality(R) >= Cardinality(R2)
+                 IN
+                 LET n ==
+                         CHOOSE n \in U :
+                             \E q \in Rmax :
+                                 n.from = q /\
+                                 n.phaseq = "preaccepted" /\
+                                 n.depq = n.initDepq
+                 IN
+                 LET c == n.body.cq
+                     D == n.body.depq
+                 IN /\ msgs' =
+                        (msgs \ OKs) \cup
+                        { ValidateMsg(p, q, b, id, c, D, Q, Cardinality(Rmax))
+                            : q \in Q })
        /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
+                        submitted, initCoord, recovered >>
+
+(***************************************************************************)
+(* 84–90 HandleValidate                                                    *)
+(***************************************************************************)
+HandleValidate(m) ==
+    /\ m.type = TypeValidate
+    /\ LET p == m.to
+           id == m.body.id
+           c == m.body.c
+           D == m.body.D
+           b == m.body.b
+       IN
+       /\ bal[p][id] = b
+       /\ cmd' = [cmd EXCEPT ![p][id] = c]
+       /\ initCmd' = [initCmd EXCEPT ![p][id] = c]
+       /\ initDep' = [initDep EXCEPT ![p][id] = D]
+       /\ LET idsForI == 
+              { id2 \in Id :
+                  id2 # id /\ 
+                  ~((phase[p][id2] = "committed" 
+                      => cmd[p][id2] # "Nop" /\ id \notin dep[p][id2] /\ Conflicts(c, cmd[p][id2]))
+                    /\ (phase[p][id2] # "committed" 
+                      => initCmd[p][id2] # "Nop" /\ id \notin initDep[p][id2] /\ Conflicts(c, initCmd[p][id2]))) }
+          IN
+          LET I == 
+              { <<id2, phase[p][id2]>> : id2 \in idsForI }
+          IN
+          /\ msgs' =
+               (msgs \ {m}) \cup
+               { ValidateOKMsg(p, m.from, m.body.b, id, D, I) }
+          /\ UNCHANGED << bal, abal, dep, phase,
                         submitted, initCoord, recovered >>
 
 (***************************************************************************)
@@ -398,10 +432,17 @@ HandleValidateOK(m) ==
            b  == m.body.b
            c  == m.body.c
            D  == m.body.D
-           Q  == m.body.Q
-           Rmax == m.body.Rmax
        IN
-        LET
+       LET validateMessage == CHOOSE m3 \in msgs : 
+                /\ m3.type = TypeValidate
+                /\ m3.to = p
+                /\ m3.body.id = id
+                /\ m3.body.b = b
+       IN
+       LET Q == validateMessage.body.Q
+            Rmax == validateMessage.body.Rmax
+       IN  
+       LET 
             OKs ==
             { m2 \in msgs :
                 m2.type = TypeValidateOK /\
@@ -409,7 +450,7 @@ HandleValidateOK(m) ==
                 m2.body.id = id /\ m2.body.b = b }
             I ==
                 UNION { m2.body.Iq : m2 \in OKs }
-        IN
+        IN    
         /\ msgs' =
             (msgs \ OKs) \cup
             IF I = {} THEN
@@ -496,37 +537,24 @@ HandlePostWaitingMsg(m) ==
     /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
                         submitted, initCoord, recovered >>
                        
-(***************************************************************************)
-(* 84–90 HandleValidate                                                    *)
-(***************************************************************************)
-HandleValidate(m) ==
-    /\ m.type = TypeValidate
-    /\ LET p == m.to
-           id == m.body.id
-           c == m.body.c
-           D == m.body.D
-           b == m.body.b
-       IN
-       /\ bal[p][id] = b
-       /\ cmd' = [cmd EXCEPT ![p][id] = c]
-       /\ initCmd' = [initCmd EXCEPT ![p][id] = c]
-       /\ initDep' = [initDep EXCEPT ![p][id] = D]
-       /\ LET idsForI == 
-              { id2 \in Id :
-                  id2 # id /\ 
-                  ~((phase[p][id2] = "committed" 
-                      => cmd[p][id2] # "Nop" /\ id \notin dep[p][id2])
-                    /\ (phase[p][id2] # "committed" 
-                      => initCmd[p][id2] # "Nop" /\ id \notin initDep[p][id2])) }
-          IN
-          LET I == 
-              { <<id2, phase[p][id2]>> : id2 \in idsForI }
-          IN
-          /\ msgs' =
-               (msgs \ {m}) \cup
-               { ValidateOKMsg(p, m.from, m.body.b, id, I, m.body.Q, m.body.Rmax) }
-          /\ UNCHANGED << bal, abal, dep, phase,
-                        submitted, initCoord, recovered >>
+
+Agreement ==
+  \A id \in Id :
+    \A p, q \in Proc :
+      /\ phase[p][id] = "committed"
+      /\ phase[q][id] = "committed"
+      => /\ dep[p][id] = dep[q][id]
+         /\ cmd[p][id] = cmd[q][id]
+
+Visibility ==
+  \A id, id2 \in Id : \E p, q \in Proc :
+    /\ id # id2
+    /\ phase[p][id] = "committed"
+    /\ phase[q][id2] = "committed"
+    /\ Conflicts(cmd[p][id], cmd[q][id2])
+    => \/ id \in dep[q][id2]
+       \/ id2 \in dep[p][id]
+
 
 
 
