@@ -97,7 +97,13 @@ VARIABLES
     initCoord,     \* initCoord[id] = process that submitted id
     recovered      \* counter of times recoverd per (p,id)
 
+vars ==
+    << bal, abal, cmd, initCmd, dep, initDep, phase, msgs,
+       submitted, initCoord, recovered >>
 
+(**********************************************************************
+ * Initialization
+ **********************************************************************)
 
 Init ==
     /\ bal = [p \in Proc |-> [id \in Id |-> 0]]
@@ -360,9 +366,9 @@ HandleRecoverOK(m) ==
               /\ msgs' =
                   (msgs \ OKs) \cup
                   { AcceptMsg(p, p2, b, id, "Nop", {}) : p2 \in Proc })
-          \/ (/\ LET ensembleR == SUBSET(Q)
+          \/ (/\ LET Rsubsets == SUBSET(Q)
                  IN
-                 LET ensembleRvalable == {R \in ensembleR : 
+                 LET validRsubsets == {R \in Rsubsets : 
                                     Cardinality(R) >= Cardinality(Q) - E 
                                     /\ \A q \in R : 
                                             \E n \in U :
@@ -370,8 +376,8 @@ HandleRecoverOK(m) ==
                                                 /\ n.phaseq = "preaccepted"
                                                 /\ n.depq = n.initDepq  }
                  IN
-                 LET Rmax == CHOOSE R \in ensembleRvalable :
-                                  \A R2 \in ensembleRvalable :
+                 LET Rmax == CHOOSE R \in validRsubsets :
+                                  \A R2 \in validRsubsets :
                                       Cardinality(R) >= Cardinality(R2)
                  IN
                  LET n ==
@@ -556,6 +562,16 @@ Visibility ==
        \/ id2 \in dep[p][id]
 
 
+Liveness ==
+    \A id \in Id :
+      id \in submitted
+      => \E p \in Proc :
+           phase[p][id] = "committed"
+
+(**********************************************************************
+ * Next-state relation
+ **********************************************************************)
+
 
 
 Next ==
@@ -573,9 +589,6 @@ Next ==
           \/ HandlePostWaitingMsg(m)
     
 
-(*     \/ \E p \in Proc, id \in Id, Rmax \in 0..Cardinality(Proc) , I \in SUBSET (Id \X {"preaccepted","accepted","committed"}), Q \in SUBSET(Proc), b \in 0..Cardinality(Proc) : 
-          HandlePostWaitingMsg(p, id, Rmax, I, Q, b) *)
-
     \/ \E q \in Proc, id \in Id, c \in Cmd :
           Submit(q, id, c)
 
@@ -583,8 +596,8 @@ Next ==
           StartRecover(p, id)
 
 
+
 Spec ==
-    Init /\ [][Next]_<< bal,abal,cmd,initCmd,dep,initDep,phase,msgs ,
-                submitted, initCoord, recovered >>
+    Init /\ [][Next]_<< vars >> /\ WF_<<vars>>(Next)
 
 =============================================================================

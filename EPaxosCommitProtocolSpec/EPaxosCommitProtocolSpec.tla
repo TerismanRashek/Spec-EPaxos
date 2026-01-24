@@ -251,6 +251,13 @@ Visibility ==
 Invariants ==
     Agreement /\ Visibility
 
+Liveness ==
+    \A id \in Id :
+      id \in submitted
+      => \E p \in Proc :
+           phase[id][p] = "committed"
+
+
 (**********************************************************************
  * Next-state relation
  **********************************************************************)
