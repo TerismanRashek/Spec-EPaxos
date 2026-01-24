@@ -1,0 +1,32 @@
+nohup: ignoring input
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Warning: Please run the Java VM which executes TLC with a throughput optimized garbage collector by passing the "-XX:+UseParallelGC" property.
+(Use the -nowarning option to disable this warning.)
+Running breadth-first search Model-Checking with fp 2 and seed -5429711800220086816 with 28 workers on 32 cores with 98304MB heap and 64MB offheap memory [pid: 6860] (Linux 6.1.0-42-cloud-amd64 amd64, Debian 17.0.17 x86_64, MSBDiskFPSet, DiskStateQueue).
+Parsing file /home/terisman/Spec-EPaxos/EPaxosRecovery/EPaxosCommitWithRecovery.tla
+Parsing file /tmp/Naturals.tla
+Parsing file /tmp/FiniteSets.tla
+Parsing file /tmp/Sequences.tla
+Parsing file /tmp/TLC.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module EPaxosCommitWithRecovery
+Starting... (2026-01-24 13:39:34)
+Computing initial states...
+Finished computing initial states: 1 distinct state generated at 2026-01-24 13:39:34.
+Progress(11) at 2026-01-24 13:39:37: 1,060,129 states generated (1,060,129 s/min), 344,944 distinct states found (344,944 ds/min), 184,742 states left on queue.
+Progress(18) at 2026-01-24 13:40:37: 32,868,880 states generated (31,808,751 s/min), 10,134,026 distinct states found (9,789,082 ds/min), 2,897,521 states left on queue.
+Progress(21) at 2026-01-24 13:41:37: 61,780,948 states generated (28,912,068 s/min), 19,183,641 distinct states found (9,049,615 ds/min), 3,877,130 states left on queue.
+Progress(23) at 2026-01-24 13:42:37: 86,685,041 states generated (24,904,093 s/min), 27,305,580 distinct states found (8,121,939 ds/min), 3,821,564 states left on queue.
+Progress(25) at 2026-01-24 13:43:37: 110,712,805 states generated (24,027,764 s/min), 35,639,572 distinct states found (8,333,992 ds/min), 2,594,690 states left on queue.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 1.9E-4
+  based on the actual fingerprints:  val = .0011
+124612605 states generated, 41007876 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 35.
+The average outdegree of the complete state graph is 1 (minimum is 0, the maximum 13 and the 95th percentile is 2).
+Finished in 04min 50s at (2026-01-24 13:44:23)
