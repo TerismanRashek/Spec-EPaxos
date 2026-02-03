@@ -27,5 +27,5 @@ Instead, it served as:
 
 ### Pratical elements
 
-You can change the config using the .cfg file and run the spec using the run.sh file.
+You can change the config using the .cfg file and run the spec using the run.sh file
 
