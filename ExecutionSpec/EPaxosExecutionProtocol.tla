@@ -163,7 +163,7 @@
                 \E D \in SUBSET CmdIds :
                     (Submit(c) (* /\ Print(<<"Submit",submitted', p, c>>, TRUE) *))
                     \/ (Commit(c) (* /\ Print(<<"Commit",dep', p, c, D>>, TRUE) *))
-                    \/ (Execute(p) /\ Print(<<"Execute",executed', dep', submitted', p>>, TRUE))
+                    \/ (Execute(p) (*/\ Print(<<"Execute",executed', dep', submitted', p>>, TRUE)*))
 
     Spec ==
         Init /\ [][Next]_vars /\ WF_vars(Next)

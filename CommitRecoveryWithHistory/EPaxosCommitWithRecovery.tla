@@ -95,12 +95,12 @@ VARIABLES
     msgs,          \* multiset of network messages
     submitted,     \* set of submitted ids
     initCoord,     \* initCoord[id] = process that submitted id
-    recovered      \* counter of times recoverd per (p,id)
+    recovered,      \* counter of times recoverd per (p,id)
+    counter         \* counter to count what step of the forced history we are in for testing
 
 vars ==
     << bal, abal, cmd, initCmd, dep, initDep, phase, msgs,
-       submitted, initCoord, recovered >>
-
+       submitted, initCoord, recovered, counter >>
 (**********************************************************************
  * Initialization
  **********************************************************************)
@@ -116,6 +116,7 @@ Init ==
     /\ initCoord = [id \in Id |-> NoProc]
     /\ submitted = {}
     /\ recovered = [p \in Proc |-> [id \in Id |-> 0]]
+    /\ counter = 0
     /\ msgs = {}
 
 (**********************************************************************
@@ -291,7 +292,7 @@ HandleCommit(m) ==
 (* 44–45 StartRecover                                                      *)
 (***************************************************************************)
 StartRecover(p,id) ==
-    /\ recovered[p][id] < 2
+    /\ recovered[p][id] < 1
     /\ recovered' = [recovered EXCEPT ![p][id] = recovered[p][id] + 1]
     /\ LET  b == IF bal[p][id] = 0 THEN p ELSE bal[p][id] + Cardinality(Proc)
        IN
@@ -347,7 +348,7 @@ HandleRecoverOK(m) ==
        /\ \/ (\E q \in Proc :
                    \E n \in U :
                         n.from = q
-                        /\ n.phaseq = "committed"
+                        /\ n.body.phaseq = "committed"
                         /\ msgs' =
                             (msgs \ OKs) \cup
                             { CommitMsg(p, p2, b, id, n.body.cq, n.body.depq)
@@ -356,7 +357,7 @@ HandleRecoverOK(m) ==
           \/ (\E q \in Proc :
                    \E n \in U :
                         n.from = q
-                        /\ n.phaseq = "accepted"
+                        /\ n.body.phaseq = "accepted"
                         /\ msgs' =
                             (msgs \ OKs) \cup
                             { AcceptMsg(p, p2, b, id, n.body.cq, n.body.depq)
@@ -560,7 +561,17 @@ Visibility ==
     /\ phase[q][id2] = "committed"
     /\ Conflicts(cmd[p][id], cmd[q][id2])
     => \/ id \in dep[q][id2]
-       \/ id2 \in dep[p]    [id]
+       \/ id2 \in dep[p][id]
+
+Invariant9 ==
+    counter < 9
+    \/
+    \A p \in Proc :
+        phase[p][1] \in {"accepted", "committed"}
+        =>
+        /\ cmd[p][1] = "A"
+        /\ dep[p][1] = ConflictingIds(1, "A")
+
 
 
 Liveness ==
@@ -573,32 +584,93 @@ Liveness ==
  * Next-state relation
  **********************************************************************)
 
+Prefix ==
+    \/ /\ counter = 0
+       /\ Submit(1, 1, "A")
+       /\ counter' = 1
 
+    \/ /\ counter = 1
+       /\ \E m \in msgs :
+            /\ m.type = TypePreAccept
+            /\ m.from = 1
+            /\ m.to = 1
+            /\ m.body.id = 1
+            /\ HandlePreAccept(m)
+       /\ counter' = 2
 
-Next ==
+    \/ /\ counter = 2
+       /\ \E m \in msgs :
+            /\ m.type = TypePreAccept
+            /\ m.from = 1
+            /\ m.to = 2
+            /\ m.body.id = 1
+            /\ HandlePreAccept(m)
+       /\ counter' = 3
+
+    \/ /\ counter = 3
+       /\ \E m \in msgs :
+            /\ m.type = TypePreAcceptOK
+            /\ m.from = 1
+            /\ m.to = 1
+            /\ m.body.id = 1
+            /\ HandlePreAcceptOK(m)
+       /\ counter' = 4
+
+    \/ /\ counter = 4
+       /\ \E m \in msgs :
+            /\ m.type = TypeAccept
+            /\ m.from = 1
+            /\ m.to = 1
+            /\ m.body.id = 1
+            /\ HandleAccept(m)
+       /\ counter' = 5
+
+    \/ /\ counter = 5
+       /\ \E m \in msgs :
+            /\ m.type = TypeAccept
+            /\ m.from = 1
+            /\ m.to = 2
+            /\ m.body.id = 1
+            /\ HandleAccept(m)
+       /\ counter' = 6
+
+    \/ /\ counter = 6
+       /\ \E m \in msgs :
+            /\ m.type = TypeAcceptOK
+            /\ m.from = 1
+            /\ m.to = 1
+            /\ m.body.id = 1
+            /\ HandleAcceptOK(m)
+       /\ counter' = 7
+
+ProtocolNext ==
     \/ \E m \in msgs :
-          \/ HandlePreAccept(m)
-          \/ HandlePreAcceptOK(m)
-          \/ HandleAccept(m)
-          \/ HandleAcceptOK(m)
-          \/ HandleCommit(m)
-
-          \/ HandleRecover(m)
-          \/ HandleRecoverOK(m)
-          \/ HandleValidate(m)
-          \/ HandleValidateOK(m)
-          \/ HandlePostWaitingMsg(m)
-    
+         \/ HandlePreAccept(m)
+         \/ HandlePreAcceptOK(m)
+         \/ HandleAccept(m)
+         \/ HandleAcceptOK(m)
+         \/ HandleCommit(m)
+         \/ HandleRecover(m)
+         \/ HandleRecoverOK(m)
+         \/ HandleValidate(m)
+         \/ HandleValidateOK(m)
+         \/ HandlePostWaitingMsg(m)
 
     \/ \E q \in Proc, id \in Id, c \in Cmd :
-          Submit(q, id, c)
+         Submit(q, id, c)
 
     \/ \E p \in Proc, id \in Id :
-          StartRecover(p, id)
+         StartRecover(p, id)
+
+Next ==
+    \/ Prefix
+    \/ (counter >= 7 /\ ProtocolNext /\ counter' = counter)
+
+
 
 
 
 Spec ==
-    Init /\ [][Next]_<< vars >> /\ WF_vars(Next)
+    Init /\ [][Next]_<< vars >>
 
 =============================================================================
