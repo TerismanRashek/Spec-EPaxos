@@ -43,7 +43,7 @@ The commit protocol is responsible for:
 - ensuring agreement and visibility guarantees
 
 
-### EPaxosRecovery
+### EPaxosCommitWithRecovery
 
 This folder contains the **full EPaxos specification**, including:
 
@@ -55,6 +55,10 @@ This folder contains the **full EPaxos specification**, including:
 This is the most complete and complex model in the repository.
 
 The code has the exact same code that the commit protocol had, with the recovery part added.
+
+### EPaxosRecoveryWithHistory
+
+This is an attempt to force a history to reach an interesting configuration.
 
 ### Misc
 
