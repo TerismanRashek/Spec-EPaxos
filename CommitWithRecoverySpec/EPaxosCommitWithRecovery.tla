@@ -10,6 +10,7 @@ CONSTANTS
     Id,             \* command identifiers  
     NoCmd,           \* special value representing no command
     NoProc          \* special value representing no process
+    NumberOfRecoveryAttempts \* maximum number of recovery attempts per process and command to avoid state space explosion
 
 ASSUME E <= F
 
@@ -126,11 +127,11 @@ vars ==
 Init ==
     /\ bal = [p \in Proc |-> [id \in Id |-> 0]]
     /\ abal = [p \in Proc |-> [id \in Id |-> 0]]
-    /\ cmd = [p \in Proc |-> [id \in Id |-> "Nop"]]
-    /\ initCmd = [p \in Proc |-> [id \in Id |-> "Nop"]]
+    /\ cmd = [p \in Proc |-> [id \in Id |-> NoCmd]]
+    /\ initCmd = [p \in Proc |-> [id \in Id |-> NoCmd]]
     /\ dep = [p \in Proc |-> [id \in Id |-> {}]]
     /\ initDep = [p \in Proc |-> [id \in Id |-> {}]]
-    /\ phase = [p \in Proc |-> [id \in Id |-> "Initial"]]
+    /\ phase = [p \in Proc |-> [id \in Id |-> InitialPhase]]
     /\ initCoord = [id \in Id |-> NoProc]
     /\ submitted = {}
     /\ recovered = [p \in Proc |-> [id \in Id |-> 0]]
@@ -152,7 +153,7 @@ FastQuorum(Q) == Cardinality(Q) >= Cardinality(Proc) - E
 
 ConflictingIds(p, c) ==
     { id2 \in Id :
-        /\ phase[p][id2] # "Initial" 
+        /\ phase[p][id2] # InitialPhase 
         /\ Conflicts(cmd[p][id2], c)
     }
 
@@ -321,7 +322,7 @@ HandleCommit(m) ==
 (***************************************************************************)
 StartRecover(p,id) ==
     \* We count the number of times a process has tried to recover a command to avoid model checker exploding
-    /\ recovered[p][id] < 2
+    /\ recovered[p][id] < NumberOfRecoveryAttempts
     /\ recovered' = [recovered EXCEPT ![p][id] = recovered[p][id] + 1]
     \* Ballots owned by p are of the form k*N + p.
     /\ LET  b == IF bal[p][id] = 0 THEN p ELSE bal[p][id] + Cardinality(Proc)
@@ -402,7 +403,7 @@ HandleRecoverOK(m) ==
           \/ (initCoord[id] \in Q
               /\ msgs' =
                   (msgs \ OKs) \cup
-                  { AcceptMsg(p, q2, b, id, "Nop", {}) : q2 \in Proc })
+                  { AcceptMsg(p, q2, b, id, NoCmd, {}) : q2 \in Proc })
           \/ (/\ LET Rsubsets == SUBSET(Q)
                  IN
                  LET validRsubsets == {R \in Rsubsets : 
@@ -456,9 +457,9 @@ HandleValidate(m) ==
               { id2 \in Id :
                   id2 # id /\ 
                   ~((phase[p][id2] = CommitedPhase 
-                      => cmd[p][id2] # "Nop" /\ id \notin dep[p][id2] /\ Conflicts(c, cmd[p][id2]))
+                      => cmd[p][id2] # NoCmd /\ id \notin dep[p][id2] /\ Conflicts(c, cmd[p][id2]))
                     /\ (phase[p][id2] # CommitedPhase 
-                      => initCmd[p][id2] # "Nop" /\ id \notin initDep[p][id2] /\ Conflicts(c, initCmd[p][id2]))) }
+                      => initCmd[p][id2] # NoCmd /\ id \notin initDep[p][id2] /\ Conflicts(c, initCmd[p][id2]))) }
           IN
           LET I == 
               { <<id2, phase[p][id2]>> : id2 \in idsForI }
@@ -498,7 +499,7 @@ HandleValidateOK(m) ==
                     { AcceptMsg(p, q2, b, id, c, D) : q2 \in Proc })
             \/ (((\E x \in I : x[2] = CommitedPhase) \/ (Rmax = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
                 /\ msgs' = (msgs \ OKs) \cup
-                    { AcceptMsg(p, q2, b, id, "Nop", {}) : q2 \in Proc })
+                    { AcceptMsg(p, q2, b, id, NoCmd, {}) : q2 \in Proc })
             \/ (msgs' = (msgs \ OKs) \cup
                 { WaitingMsg(p, q2, id, Rmax) : q2 \in Proc } \cup
                 { PostWaitingMsg(p, id, I, Q, b) })
@@ -521,16 +522,16 @@ HandlePostWaitingMsg(m) ==
         \/ (\E x \in I :
                 x[1] # id /\
                 x[2] = CommitedPhase /\
-                cmd[p][x[1]] # "Nop" /\
+                cmd[p][x[1]] # NoCmd /\
                 id \notin dep[p][x[1]]
             /\ msgs' =
                     msgs \cup
-                    { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
+                    { AcceptMsg(p, q, bal[p][id], id, NoCmd, {}) : q \in Proc })
 
         \/ (\A x \in I :
                 x[1] # id =>
                 (x[2] = CommitedPhase /\
-                    (cmd[p][x[1]] = "Nop" \/ id \in dep[p][x[1]]))
+                    (cmd[p][x[1]] = NoCmd \/ id \in dep[p][x[1]]))
             /\ msgs' =
                     msgs \cup
                     { AcceptMsg(p, q, bal[p][id], id, cmd[p][id], dep[p][id])
@@ -545,7 +546,7 @@ HandlePostWaitingMsg(m) ==
                     m2.body.k > N - F - E
             /\ msgs' =
                     msgs \cup
-                    { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
+                    { AcceptMsg(p, q, bal[p][id], id, NoCmd, {}) : q \in Proc })
 
         \/ (\E m2 \in msgs :
                 m2.type = TypeRecoverOK /\
@@ -564,7 +565,7 @@ HandlePostWaitingMsg(m) ==
                     { AcceptMsg(p, q, bal[p][id], id,
                                 m2.body.cmd, m2.body.dep) : q \in Proc }
                 ELSE
-                    { AcceptMsg(p, q, bal[p][id], id, "Nop", {}) : q \in Proc })
+                    { AcceptMsg(p, q, bal[p][id], id, NoCmd, {}) : q \in Proc })
 
     /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
                         submitted, initCoord, recovered >>
@@ -594,6 +595,25 @@ Liveness ==
       => \E p \in Proc :
            phase[p][id] = CommitedPhase
 
+TypeInv ==
+    /\ \A p \in Proc, id \in Id :
+        /\ bal[p][id] >= 0 
+        /\ abal[p][id] >= 0
+        /\ (cmd[p][id] \in Cmd \/ cmd[p][id] = NoCmd)
+        /\ (initCmd[p][id] \in Cmd \/ initCmd[p][id] = NoCmd)
+        /\ dep[p][id] \subseteq Id
+        /\ initDep[p][id] \subseteq Id
+        /\ phase[p][id] \in {InitialPhase, PreAcceptedPhase, AcceptedPhase, CommitedPhase}
+        /\ recovered[p][id] >= 0 /\ recovered[p][id] <= NumberOfRecoveryAttempts
+
+    /\ \A m \in msgs :
+        m.type \in {TypePreAccept, TypePreAcceptOK, TypeAccept, TypeAcceptOK, TypeCommit,
+                    TypeRecover, TypeRecoverOK, TypeValidate, TypeValidateOK,
+                    TypeWaiting, TypePostWaiting} 
+    
+    /\ \A id \in Id :
+        /\ initCoord[id] \in Proc \cup {NoProc}
+    /\ submitted \subseteq Id
 (**********************************************************************
  * Next-state relation
  **********************************************************************)
