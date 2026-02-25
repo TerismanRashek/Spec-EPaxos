@@ -1,5 +1,7 @@
 # OnlyCommitSpec
 
+This is outdated, see CommitWithRecoverySpec for latest version
+
 This folder contains a TLA⁺ specification of the **EPaxos commit protocol**,
 without recovery.
 
