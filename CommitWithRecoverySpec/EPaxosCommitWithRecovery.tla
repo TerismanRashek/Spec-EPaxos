@@ -91,11 +91,11 @@ RecoverOKMsg(p,q,b,id,abalq,cq,depq,initDepq,phaseq) ==
         [ b|->b, id|->id, abalq|->abalq, cq|->cq,
           depq|->depq, initDepq|->initDepq, phaseq|->phaseq ])
 
-ValidateMsg(p,q,b,id,c,D,Q,Rmax) ==
-    Message(TypeValidate,p,q,[b|->b,id|->id,c|->c,D|->D,Q|->Q,CardinalityRmax|->CardinalityRmax])
+ValidateMsg(p,q,b,id,c,D) ==
+    Message(TypeValidate,p,q,[b|->b,id|->id,c|->c,D|->D])
 
-ValidateOKMsg(p,q,b,id,c,D,I,Q,Rmax) ==
-    Message(TypeValidateOK,p,q,[b|->b,id|->id,c|->c,D|->D,I|->I,Q|->Q,CardinalityRmax|->CardinalityRmax])
+ValidateOKMsg(p,q,b,id,c,D,I) ==
+    Message(TypeValidateOK,p,q,[b|->b,id|->id,c|->c,D|->D,I|->I])
 
 WaitingMsg(p,q,id,k) ==
     Message(TypeWaiting,p,q,[id|->id,k|->k])
@@ -114,11 +114,13 @@ VARIABLES
     msgs,          \* multiset of network messages
     submitted,     \* set of submitted ids
     initCoord,     \* initCoord[id] = process that submitted id
-    recovered      \* counter of times recoverd per (p,id)
+    recovered,     \* counter of times recoverd per (p,id)
+    Q,             \* Q[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
+    CardinalityRmax\* they only appear because I have the split the pseudocode of RecoverOK in 3 handlers and these local variables are lost from one handler to the other.    
 
 vars ==
     << bal, abal, cmd, initCmd, dep, initDep, phase, msgs,
-       submitted, initCoord, recovered >>
+       submitted, initCoord, recovered, Q, CardinalityRmax >>
 
 (***************************************************************************)
 (* Initialisation                                                            *)
@@ -136,6 +138,8 @@ Init ==
     /\ submitted = {}
     /\ recovered = [p \in Proc |-> [id \in Id |-> 0]]
     /\ msgs = {}
+    /\ Q = [p \in Proc |-> [id \in Id |-> {}]]
+    /\ CardinalityRmax = [p \in Proc |-> [id \in Id |-> 0]]
 
 (***************************************************************************)
 (* Helpers                                                                 *)
@@ -172,7 +176,7 @@ Submit(p, id, c) ==
           /\ msgs' = msgs \cup
                 { PreAcceptMsg(p, q, id, c, D0) : q \in Proc }
           /\ UNCHANGED << phase, bal, cmd, initCmd, initDep,
-                           dep, abal, recovered >> 
+                           dep, abal, recovered, Q, CardinalityRmax >> 
 
 (***************************************************************************)
 (* 11–18 HandlePreAccept                                                   *)
@@ -198,7 +202,7 @@ HandlePreAccept(m) ==
                            PreAcceptOKMsg(p, q, id, Dfinal)
                        }) \ {m}
           /\ phase' = [phase EXCEPT ![p][id] = PreAcceptedPhase]
-          /\ UNCHANGED << abal, submitted, bal, initCoord, recovered >>
+          /\ UNCHANGED << abal, submitted, bal, initCoord, recovered, Q, CardinalityRmax  >>
 
 (***************************************************************************)
 (* 19–25 HandlePreAcceptOk                                                 *)
@@ -244,7 +248,7 @@ HandlePreAcceptOK(p, id) ==
                         { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc }
     /\ UNCHANGED << bal, phase, cmd, initCmd,
                      initDep, dep, abal,
-                     submitted, initCoord, recovered >>
+                     submitted, initCoord, recovered, Q, CardinalityRmax  >>
                    
 (***************************************************************************)
 (* 26–33 HandleAccept                                                      *)
@@ -270,7 +274,7 @@ HandleAccept(m) ==
            (msgs \ {m}) \cup
            { AcceptOKMsg(p, q, b, id) }
     /\ UNCHANGED << initCmd, initDep,
-                      submitted, initCoord, recovered >>
+                      submitted, initCoord, recovered, Q, CardinalityRmax  >>
 
 (***************************************************************************)
 (* 34–36 HandleAcceptOk                                                    *)
@@ -307,7 +311,7 @@ HandleAcceptOK(m) ==
                        : q2 \in Proc
                 }) \ OKs
              /\ UNCHANGED << bal, phase, cmd, initCmd,
-                              initDep, dep, abal, submitted, initCoord, recovered >>
+                              initDep, dep, abal, submitted, initCoord, recovered, Q, CardinalityRmax  >>
 
 (***************************************************************************)
 (* 37–42 HandleCommit                                                      *)
@@ -328,7 +332,7 @@ HandleCommit(m) ==
        /\ phase' = [phase EXCEPT ![p][id] = CommittedPhase]
        /\ msgs' = msgs \ {m}
        /\ UNCHANGED << bal, initCmd, initDep,
-                        submitted, initCoord, recovered >>
+                        submitted, initCoord, recovered, Q, CardinalityRmax  >>
 
 (***************************************************************************)
 (* 43–45 StartRecover                                                      *)
@@ -340,10 +344,9 @@ StartRecover(p,id) ==
     \* Ballots owned by p are of the form k*N + p.
     /\ LET  b == IF bal[p][id] = 0 THEN p ELSE bal[p][id] + Cardinality(Proc)
        IN
-        /\ bal' = [bal EXCEPT ![p][id] = b]
         /\ msgs' = msgs \cup { RecoverMsg(p,q,b,id) : q \in Proc }
         /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase,
-                            submitted, initCoord >>
+                            submitted, initCoord, Q, CardinalityRmax  >>
 
 (***************************************************************************)
 (* 46–49 HandleRecover                                                     *)
@@ -363,7 +366,7 @@ HandleRecover(m) ==
                           cmd[p][id],dep[p][id],initDep[p][id],
                           phase[p][id]) }
        /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase,
-                        submitted, initCoord, recovered >>
+                        submitted, initCoord, recovered, Q, CardinalityRmax  >>
 
 (***************************************************************************)
 (* 50–60 HandleRecoverOK                                                   *)
@@ -429,9 +432,12 @@ HandleRecoverOK(m) ==
                         IN
                         LET c == n.body.cq
                             D == n.body.depq
-                        IN /\ msgs' =
+                        IN
+                         /\ Q' = [Q  EXCEPT ![p][id] = Q]
+                         /\ CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
+                         /\ msgs' =
                                 (msgs \ OKs) \cup
-                                { ValidateMsg(p, q2, b, id, c, D, Q, Cardinality(Rmax)) \*passing Q and Rmax because we still need them in the rest of the recoverOK, but in my TLA here the following will be in validateOK
+                                { ValidateMsg(p, q2, b, id, c, D)
                                     : q2 \in Q })
        /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
                         submitted, initCoord, recovered >>
@@ -447,8 +453,6 @@ HandleValidate(m) ==
            c == m.body.c
            D == m.body.D
            b == m.body.b
-           Q == m.body.Q
-           CardinalityRmax == m.body.CardinalityRmax
        IN
        /\ bal[p][id] = b
        /\ cmd' = [cmd EXCEPT ![p][id] = c]
@@ -465,9 +469,9 @@ HandleValidate(m) ==
           IN
           /\ msgs' =
                (msgs \ {m}) \cup
-               { ValidateOKMsg(p, q, b, id, c, D, I, Q, CardinalityRmax) }
+               { ValidateOKMsg(p, q, b, id, c, D, I) }
           /\ UNCHANGED << bal, abal, dep, phase,
-                        submitted, initCoord, recovered >>
+                        submitted, initCoord, recovered, Q, CardinalityRmax  >>
 
 (***************************************************************************)
 (* 61–68 HandleValidateOK                                                  *)
@@ -481,14 +485,12 @@ HandleValidateOK(m) ==
            c  == m.body.c
            D  == m.body.D
            Iq  == m.body.I
-           Q  == m.body.Q
-           CardinalityRmax == m.body.CardinalityRmax
        IN 
        LET 
             OKs ==
             { m2 \in msgs :
                 m2.type = TypeValidateOK /\
-                m2.to = p /\ m2.from \in Q /\
+                m2.to = p /\ m2.from \in Q[p][id] /\
                 m2.body.id = id /\ m2.body.b = b }
             I ==
                 UNION { m2.body.Iq : m2 \in OKs }
@@ -496,15 +498,15 @@ HandleValidateOK(m) ==
         /\  \/ (I = {}
                 /\ msgs' = (msgs \ OKs) \cup
                     { AcceptMsg(p, q2, b, id, c, D) : q2 \in Proc })
-            \/ (((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
+            \/ (((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
                 /\ msgs' = (msgs \ OKs) \cup
                     { AcceptMsg(p, q2, b, id, NoCmd, {}) : q2 \in Proc })
             \/ (msgs' = (msgs \ OKs) \cup
-                { WaitingMsg(p, q2, id, CardinalityRmax) : q2 \in Proc } \cup
+                { WaitingMsg(p, q2, id, CardinalityRmax[p][id]) : q2 \in Proc } \cup
                 { PostWaitingMsg(p, id, I, Q, b) })
 
 
-    /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,submitted, initCoord, recovered >>
+    /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,submitted, initCoord, recovered, Q, CardinalityRmax  >>
 
 (***************************************************************************)
 (* 69–80 HandlePostWaitingMsg                                                 *)
@@ -626,7 +628,6 @@ TypeInv ==
 Next ==
     \/ \E m \in msgs :
           \/ HandlePreAccept(m)
-          \/ HandlePreAcceptOK(m)
           \/ HandleAccept(m)
           \/ HandleAcceptOK(m)
           \/ HandleCommit(m)
@@ -643,6 +644,7 @@ Next ==
 
     \/ \E p \in Proc, id \in Id :
           StartRecover(p, id)
+          HandlePreAcceptOK(p, id)
 
 
 
