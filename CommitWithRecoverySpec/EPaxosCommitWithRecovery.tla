@@ -204,6 +204,7 @@ HandlePreAccept(m) ==
 (* 19–25 HandlePreAcceptOk                                                 *)
 (***************************************************************************)
 
+
 HandlePreAcceptOK(p, id) ==
     /\ p \in Proc
     /\ id \in Id
@@ -211,44 +212,40 @@ HandlePreAcceptOK(p, id) ==
     /\ phase[p][id] = PreAcceptedPhase
     /\ p = initCoord[id]
     /\ LET fullMessageSet ==
-            { q2 \in Proc :
-                \E k \in msgs :
-                    /\ k.type = TypePreAcceptOK
-                    /\ k.body.id = id
-                    /\ k.to = p
-                    /\ k.from = q2
+            {  m \in msgs :
+                    /\ m.type = TypePreAcceptOK
+                    /\ m.body.id = id
+                    /\ m.to = p
             }
         IN
-        /\ Quorum(quorum)
-        /\ LET OKs ==
-                { k \in msgs :
-                    /\ k.type = TypePreAcceptOK
-                    /\ k.to = p
-                    /\ k.from \in quorum
-                    /\ k.body.id = id
-                }
-            IN
-            /\ LET Dfinal == UNION { k.body.Dq : k \in OKs }
-            IN
-            /\ IF FastQuorum(quorum)
-                    /\ \A k \in OKs :
-                        k.body.Dq = initDep[p][id]
-                THEN
+        /\ \E m \in fullMessageSet : m.from = p
+        \* question here, I assume that delivering self messages instantly implies that the sender is always in the quorum. This was the case when handler triggered of that
+        \* specific message, but now initCoord may not be in the quorum. I suppose I should add a precondition that the self-sent preAcceptOK is in fullMessageSet?
+        /\ Quorum(fullMessageSet)
+        \* I build the set of fast quorums from the messages, check if there is at least one, and CHOOSE it deterministically
+        /\ LET fastQuorums ==
+                { Q \in  SUBSET(fullMessageSet) :
+                    \A m in Q : m.body.Dq = initDep[p][id] /\ FastQuorum(Q) }
+           IN
+            /\ IF fastQuorums # {} THEN
+                    LET Q == CHOOSE Q \in fastQuorums : TRUE
+                    IN
+                    LET Dfinal == UNION { m.body.Dq : m \in Q }
+                    IN
                     /\ msgs' =
-                        (msgs \ OKs) \cup
-                        { CommitMsg(p, q2, 0, id,
-                                    cmd[p][id], Dfinal)
-                            : q2 \in Proc }
-                ELSE
+                        (msgs \ fullMessageSet) \cup \* can I remove the fullMessageSet here? I am pretty sure I can but just in case I'm missing something.
+                        { CommitMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc }
+               ELSE
+                    \* If fast path fails, I just take the quorum with all the messages, there is no need to check in the same way as the fast path        
+                    LET Dfinal == UNION { m.body.Dq : m \in fullMessageSet }
+                    IN
                     /\ msgs' =
-                        (msgs \ OKs) \cup
-                        { AcceptMsg(p, q2, 0, id,
-                                    cmd[p][id], Dfinal)
-                            : q2 \in Proc }
+                        (msgs \ fullMessageSet) \cup
+                        { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc }
     /\ UNCHANGED << bal, phase, cmd, initCmd,
                      initDep, dep, abal,
                      submitted, initCoord, recovered >>
-                        
+                   
 (***************************************************************************)
 (* 26–33 HandleAccept                                                      *)
 (***************************************************************************)                            
