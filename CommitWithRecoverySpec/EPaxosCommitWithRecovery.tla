@@ -379,8 +379,7 @@ HandleRecoverOK(p, id) ==
             /\ k.body.id = id 
             /\ k.body.b = bal[p][id]  } \* ballot precondition is here
         IN
-        /\  LET m == CHOOSE m \in quorumOfMessages : TRUE
-                Q == { k.from : k \in quorumOfMessages}
+        /\  LET Q == { k.from : k \in quorumOfMessages}
                 Abals == { k.body.abalq : k \in quorumOfMessages }
                 bmax == CHOOSE val \in Abals : \A val2 \in Abals : val >= val2
                 U == { k \in quorumOfMessages : k.body.abalq = bmax }
@@ -465,18 +464,17 @@ HandleValidate(m) ==
 (* 61–68 HandleValidateOK                                                  *)
 (***************************************************************************)
 HandleValidateOK(p, id) ==
-    /\ recoveryState[p][id] = ValidateOKState
-    /\ LET b  == bal[p][id]
+    /\  recoveryState[p][id] = ValidateOKState
+    /\  LET b  == bal[p][id]
            Q  == Qvar[p][id]
-       IN 
-       LET 
-            OKs ==
+        IN 
+        LET quorumOfMessages ==
             { m \in msgs :
-                m.type = TypeValidateOK /\
-                m.to = p /\ m.from \in Q /\
-                m.body.id = id /\ m.body.b = b }
-            I ==
-                UNION { m.body.Iq : m \in OKs }
+                /\ m.type = TypeValidateOK 
+                /\ m.to = p 
+                /\ m.body.id = id 
+                /\ m.body.b = bal[p][id] } \* must recheck Im still in the same ballot
+            I == UNION { m.body.Iq : m \in OKs }
         IN
         LET m == CHOOSE m \in OKs : TRUE
         IN 
@@ -502,12 +500,12 @@ HandleValidateOK(p, id) ==
 (***************************************************************************)
                     
 HandlePostWaiting(p, id) ==
-    /\ recoveryState[p][id] = PostWaitingState
-    /\ LET 
+    /\  recoveryState[p][id] = PostWaitingState
+    /\  LET 
            I == Ivar[p][id]
            Q == Qvar[p][id]
            b == bal[p][id] \* bal[id] = b as a precondition of RecoverOK so I can conflate the two
-       IN /\ b = bal[p][id]
+        IN /\ b = bal[p][id]
         \/ (\E x \in I :
                 x[1] # id /\
                 x[2] = CommittedPhase /\
