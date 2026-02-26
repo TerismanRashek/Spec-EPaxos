@@ -228,20 +228,18 @@ HandlePreAcceptOK(p, id) ==
     /\ bal[p][id] = 0
     /\ phase[p][id] = PreAcceptedPhase
     /\ p = initCoord[id]
-    /\ LET fullMessageSet ==
+    /\ LET quorumOfMessages ==
             {  m \in msgs :
                     /\ m.type = TypePreAcceptOK
                     /\ m.body.id = id
                     /\ m.to = p
             }
         IN
-        /\ \E m \in fullMessageSet : m.from = p
-        \* question here, I assume that delivering self messages instantly implies that the sender is always in the quorum. This was the case when handler triggered of that
-        \* specific message, but now initCoord may not be in the quorum. I suppose I should add a precondition that the self-sent preAcceptOK is in fullMessageSet?
-        /\ IsQuorumSized(fullMessageSet)
+        /\ \E m \in quorumOfMessages : m.from = p
+        /\ IsQuorumSized(quorumOfMessages)
         \* I build the set of fast quorums from the messages, check if there is at least one, and CHOOSE it deterministically
         /\ LET fastQuorums ==
-                { quorum \in  SUBSET(fullMessageSet) :
+                { quorum \in  SUBSET(quorumOfMessages) :
                     \A m \in quorum : m.body.Dq = initDep[p][id] /\ IsFastQuorumSized(quorum) }
            IN
             /\ IF fastQuorums # {} THEN
@@ -250,14 +248,14 @@ HandlePreAcceptOK(p, id) ==
                     LET Dfinal == UNION { m.body.Dq : m \in Q }
                     IN
                     /\ msgs' =
-                        (msgs \ fullMessageSet) \cup \* can I remove the fullMessageSet here? I am pretty sure I can but just in case I'm missing something.
+                        (msgs \ quorumOfMessages) \cup
                         { CommitMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc }
                ELSE
                     \* If fast path fails, I just take the quorum with all the messages, there is no need to check in the same way as the fast path        
-                    LET Dfinal == UNION { m.body.Dq : m \in fullMessageSet }
+                    LET Dfinal == UNION { m.body.Dq : m \in quorumOfMessages }
                     IN
                     /\ msgs' =
-                        (msgs \ fullMessageSet) \cup
+                        (msgs \ quorumOfMessages) \cup
                         { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc }
     /\ UNCHANGED << bal, phase, cmd, initCmd,
                      initDep, dep, abal,
@@ -374,73 +372,61 @@ HandleRecover(m) ==
 (***************************************************************************)
 HandleRecoverOK(p, id) ==
     /\ recoveryState[p][id] = RecoverOKState
-    /\ LET m == CHOOSE m \in msgs : m.type = TypeRecoverOK /\ m.to = p /\ m.from = p /\ m.body.id = id /\ m.body.b = bal[p][id]
+    /\  LET quorumOfMessages ==
+        { k \in msgs :
+            /\ k.type = TypeRecoverOK
+            /\ k.to = p 
+            /\ k.body.id = id 
+            /\ k.body.b = bal[p][id]  } \* ballot precondition is here
         IN
-        /\ LET
-            q == m.from
-            b == m.body.b
-            abalq == m.body.abalq
-            cq == m.body.cq
-            depq == m.body.depq
-            initDepq == m.body.initDepq
-            phaseq == m.body.phaseq
-            IN
-            /\ bal[p][id] = b
-            /\ LET Q ==
-                    { q2 \in Proc :
-                        \E k \in msgs :
-                            k.type = TypeRecoverOK /\ k.to = p /\ k.from = q2 /\
-                            k.body.id = id /\ k.body.b = b }
-                OKs ==
-                    { k \in msgs :
-                        k.type = TypeRecoverOK /\ k.to = p /\ k.from \in Q /\
-                        k.body.id = id /\ k.body.b = b }
-                Abals == { k.body.abalq : k \in OKs }
+        /\  LET m == CHOOSE m \in quorumOfMessages : TRUE
+                Q == { k.from : k \in quorumOfMessages}
+                Abals == { k.body.abalq : k \in quorumOfMessages }
                 bmax == CHOOSE val \in Abals : \A val2 \in Abals : val >= val2
-                U == { k \in OKs : k.body.abalq = bmax }
-                IN
-                    /\ Cardinality(Q) >= QuorumSize
-                    /\ \/ (\E q2 \in Proc :
-                                \E n \in U :
-                                        n.from = q2
-                                        /\ n.body.phaseq = CommittedPhase
-                                        /\ msgs' =
-                                            (msgs \ OKs) \cup
-                                            { CommitMsg(p, q3, b, id, n.body.cq, n.body.depq)
-                                                : q3 \in Proc })
-
-                        \/ (\E q2 \in Proc :
-                                \E n \in U :
-                                        n.from = q2
-                                        /\ n.body.phaseq = AcceptedPhase
-                                        /\ msgs' =
-                                            (msgs \ OKs) \cup
-                                            { AcceptMsg(p, q3, b, id, n.body.cq, n.body.depq)
-                                                : q3 \in Proc })
-
-                        \/ (initCoord[id] \in Q
-                            /\ msgs' =
-                                (msgs \ OKs) \cup
-                                { AcceptMsg(p, q2, b, id, Nop, {}) : q2 \in Proc })
-                        \/ (/\ LET Rmax == { q2 \in Q :
-                                            \E n \in U :
-                                                n.from = q2
-                                                /\ n.body.phaseq = PreAcceptedPhase
-                                                /\ n.body.depq = n.body.initDepq }
-                                IN
-                                LET n == CHOOSE n \in U :
-                                                n.from \in Rmax /\ n.body.phaseq = PreAcceptedPhase
-                                IN
-                                LET c == n.body.cq
-                                    D == n.body.depq
-                                IN
-                                /\ Qvar' = [Qvar EXCEPT ![p][id] = Q]
-                                /\ CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
-                                /\ recoveryState' = [recoveryState EXCEPT ![p][id] = ValidateOKState]
+                U == { k \in quorumOfMessages : k.body.abalq = bmax }
+            IN
+            /\ Cardinality(Q) >= QuorumSize
+            /\ \/ (\E q2 \in Proc :
+                        \E n \in U :
+                                n.from = q2
+                                /\ n.body.phaseq = CommittedPhase
                                 /\ msgs' =
-                                        (msgs \ OKs) \cup
-                                        { ValidateMsg(p, q2, b, id, c, D)
-                                            : q2 \in Q })
+                                    (msgs \ OKs) \cup
+                                    { CommitMsg(p, q3, b, id, n.body.cq, n.body.depq)
+                                        : q3 \in Proc })
+
+                \/ (\E q2 \in Proc :
+                        \E n \in U :
+                                n.from = q2
+                                /\ n.body.phaseq = AcceptedPhase
+                                /\ msgs' =
+                                    (msgs \ OKs) \cup
+                                    { AcceptMsg(p, q3, b, id, n.body.cq, n.body.depq)
+                                        : q3 \in Proc })
+
+                \/ (initCoord[id] \in Q
+                    /\ msgs' =
+                        (msgs \ OKs) \cup
+                        { AcceptMsg(p, q2, b, id, Nop, {}) : q2 \in Proc })
+                \/ (/\ LET Rmax == { q2 \in Q :
+                                    \E n \in U :
+                                        n.from = q2
+                                        /\ n.body.phaseq = PreAcceptedPhase
+                                        /\ n.body.depq = n.body.initDepq }
+                        IN
+                        LET n == CHOOSE n \in U :
+                                        n.from \in Rmax /\ n.body.phaseq = PreAcceptedPhase
+                        IN
+                        LET c == n.body.cq
+                            D == n.body.depq
+                        IN
+                        /\ Qvar' = [Qvar EXCEPT ![p][id] = Q]
+                        /\ CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
+                        /\ recoveryState' = [recoveryState EXCEPT ![p][id] = ValidateOKState]
+                        /\ msgs' =
+                                (msgs \ OKs) \cup
+                                { ValidateMsg(p, q2, b, id, c, D)
+                                    : q2 \in Q })
        /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
                         submitted, initCoord, recovered, Ivar >>
 
