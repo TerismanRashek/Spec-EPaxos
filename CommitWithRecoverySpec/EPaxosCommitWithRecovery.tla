@@ -18,6 +18,8 @@ ASSUME E <= F
 N == Cardinality(Proc)
 QuorumSize == N - F
 
+ASSUME quorumSize > N/2
+
 \*Phases
 (* Initial = 1
    PreAccepted = 2
@@ -121,7 +123,7 @@ VARIABLES
     \* These variables are used to persist to local state in the RecoverOK part, which is split in 3 in my TLA spec.
     I,             \* I[p]][id] used to keep track of I set in validateOK handler, which we need in PostWaiting handler.
     Q,             \* Q[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
-    CardinalityRmax\* they only appear because I have the split the pseudocode of RecoverOK in 3 handlers and these local variables are lost from one handler to the other.    
+    CardinalityRmax,\* they only appear because I have the split the pseudocode of RecoverOK in 3 handlers and these local variables are lost from one handler to the other.    
     recoveryState  \* recoveryState[p][id] : variable to keep track of which step of the recoverOK handler p is in.
 
 CONSTANTS InitialrecoveryState, RecoverOKState, ValidateOKState, PostWaitingState
@@ -240,7 +242,7 @@ HandlePreAcceptOK(p, id) ==
         \* I build the set of fast quorums from the messages, check if there is at least one, and CHOOSE it deterministically
         /\ LET fastQuorums ==
                 { Q \in  SUBSET(fullMessageSet) :
-                    \A m in Q : m.body.Dq = initDep[p][id] /\ FastQuorum(Q) }
+                    \A m \in Q : m.body.Dq = initDep[p][id] /\ FastQuorum(Q) }
            IN
             /\ IF fastQuorums # {} THEN
                     LET Q == CHOOSE Q \in fastQuorums : TRUE
@@ -300,31 +302,28 @@ HandleAccept(m) ==
 HandleAcceptOK(p, id) ==
     /\ LET m == CHOOSE m \in msgs : m.type = TypeAcceptOK /\ m.to = p /\ m.from = p /\ m.body.id = id 
        IN
-       LET b == m.body.b
-       IN
-        /\ bal[p][id] = b
-        /\ phase[p][id] = AcceptedPhase
-        /\ LET quorum ==
-                { q2 \in Proc :
-                    \E k \in msgs :
-                        /\ k.type = TypeAcceptOK
-                        /\ k.body.id = id
-                        /\ k.to = p
-                        /\ k.from = q2
-                }
-            IN
-            /\ Quorum(quorum)
-            /\ LET OKs == { k \in msgs :
-                    /\ k.type = TypeAcceptOK
-                    /\ k.to = p
-                    /\ k.from \in quorum
-                    /\ k.body.id = id
-                }
+       /\ LET b == m.body.b
+          IN
+            /\ bal[p][id] = b
+            /\ phase[p][id] = AcceptedPhase
+            /\ LET quorum ==
+                    { q2 \in Proc :
+                        \E k \in msgs :
+                            /\ k.type = TypeAcceptOK
+                            /\ k.body.id = id
+                            /\ k.to = p
+                            /\ k.from = q2
+                    }
                 IN
-                /\ msgs' = (msgs \cup {
-                        CommitMsg(p, q2, b, id, cmd[p][id], dep[p][id])
-                        : q2 \in Proc
-                }) \ OKs
+                /\ Quorum(quorum)
+                /\ LET OKs == { k \in msgs :
+                        /\ k.type = TypeAcceptOK
+                        /\ k.to = p
+                        /\ k.from \in quorum
+                        /\ k.body.id = id
+                    }
+                    IN
+                    /\ msgs' = (msgs \cup {CommitMsg(p, q2, b, id, cmd[p][id], dep[p][id]) : q2 \in Proc }) \ OKs
     /\ UNCHANGED << bal, phase, cmd, initCmd,
                 initDep, dep, abal, submitted, initCoord, recovered, Q, CardinalityRmax, recoveryState  >>
 
@@ -400,64 +399,63 @@ HandleRecoverOK(p, id) ==
             depq == m.body.depq
             initDepq == m.body.initDepq
             phaseq == m.body.phaseq
-        IN
-        /\ bal[p][id] = b
-        /\ LET Q ==
-                { q2 \in Proc :
-                    \E k \in msgs :
-                        k.type = TypeRecoverOK /\ k.to = p /\ k.from = q2 /\
-                        k.body.id = id /\ k.body.b = b }
-            OKs ==
-                { k \in msgs :
-                    k.type = TypeRecoverOK /\ k.to = p /\ k.from \in Q /\
-                    k.body.id = id /\ k.body.b = b }
-            Abals == { k.body.abalq : k \in OKs }
-            bmax == CHOOSE val \in Abals : \A val2 \in Abals : val >= val2
-            U == { k \in OKs : k.body.abalq = bmax }
             IN
-                /\ Cardinality(Q) >= QuorumSize
-                /\ \/ (\E q2 \in Proc :
-                            \E n \in U :
-                                    n.from = q2
-                                    /\ n.body.phaseq = CommittedPhase
-                                    /\ msgs' =
-                                        (msgs \ OKs) \cup
-                                        { CommitMsg(p, q3, b, id, n.body.cq, n.body.depq)
-                                            : q3 \in Proc })
+            /\ bal[p][id] = b
+            /\ LET Q ==
+                    { q2 \in Proc :
+                        \E k \in msgs :
+                            k.type = TypeRecoverOK /\ k.to = p /\ k.from = q2 /\
+                            k.body.id = id /\ k.body.b = b }
+                OKs ==
+                    { k \in msgs :
+                        k.type = TypeRecoverOK /\ k.to = p /\ k.from \in Q /\
+                        k.body.id = id /\ k.body.b = b }
+                Abals == { k.body.abalq : k \in OKs }
+                bmax == CHOOSE val \in Abals : \A val2 \in Abals : val >= val2
+                U == { k \in OKs : k.body.abalq = bmax }
+                IN
+                    /\ Cardinality(Q) >= QuorumSize
+                    /\ \/ (\E q2 \in Proc :
+                                \E n \in U :
+                                        n.from = q2
+                                        /\ n.body.phaseq = CommittedPhase
+                                        /\ msgs' =
+                                            (msgs \ OKs) \cup
+                                            { CommitMsg(p, q3, b, id, n.body.cq, n.body.depq)
+                                                : q3 \in Proc })
 
-                    \/ (\E q2 \in Proc :
-                            \E n \in U :
-                                    n.from = q2
-                                    /\ n.body.phaseq = AcceptedPhase
-                                    /\ msgs' =
-                                        (msgs \ OKs) \cup
-                                        { AcceptMsg(p, q3, b, id, n.body.cq, n.body.depq)
-                                            : q3 \in Proc })
+                        \/ (\E q2 \in Proc :
+                                \E n \in U :
+                                        n.from = q2
+                                        /\ n.body.phaseq = AcceptedPhase
+                                        /\ msgs' =
+                                            (msgs \ OKs) \cup
+                                            { AcceptMsg(p, q3, b, id, n.body.cq, n.body.depq)
+                                                : q3 \in Proc })
 
-                    \/ (initCoord[id] \in Q
-                        /\ msgs' =
-                            (msgs \ OKs) \cup
-                            { AcceptMsg(p, q2, b, id, Nop, {}) : q2 \in Proc })
-                    \/ (/\ LET Rmax == { q2 \in Q :
-                                        \E n \in U :
-                                            n.from = q2
-                                            /\ n.body.phaseq = PreAcceptedPhase
-                                            /\ n.body.depq = n.body.initDepq }
-                            IN
-                            LET n == CHOOSE n \in U :
-                                            n.from \in Rmax /\
-                                            n.body.phaseq = PreAcceptedPhase /\
-                            IN
-                            LET c == n.body.cq
-                                D == n.body.depq
-                            IN
-                            /\ Q' = [Q  EXCEPT ![p][id] = Q]
-                            /\ CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
-                            /\ recoveryState' = [recoveryState EXCEPT ![p][id] = ValidateOKState]
+                        \/ (initCoord[id] \in Q
                             /\ msgs' =
-                                    (msgs \ OKs) \cup
-                                    { ValidateMsg(p, q2, b, id, c, D)
-                                        : q2 \in Q })
+                                (msgs \ OKs) \cup
+                                { AcceptMsg(p, q2, b, id, Nop, {}) : q2 \in Proc })
+                        \/ (/\ LET Rmax == { q2 \in Q :
+                                            \E n \in U :
+                                                n.from = q2
+                                                /\ n.body.phaseq = PreAcceptedPhase
+                                                /\ n.body.depq = n.body.initDepq }
+                                IN
+                                LET n == CHOOSE n \in U :
+                                                n.from \in Rmax /\ n.body.phaseq = PreAcceptedPhase
+                                IN
+                                LET c == n.body.cq
+                                    D == n.body.depq
+                                IN
+                                /\ Q' = [Q  EXCEPT ![p][id] = Q]
+                                /\ CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
+                                /\ recoveryState' = [recoveryState EXCEPT ![p][id] = ValidateOKState]
+                                /\ msgs' =
+                                        (msgs \ OKs) \cup
+                                        { ValidateMsg(p, q2, b, id, c, D)
+                                            : q2 \in Q })
        /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
                         submitted, initCoord, recovered >>
 
@@ -478,12 +476,12 @@ HandleValidate(m) ==
        /\ initCmd' = [initCmd EXCEPT ![p][id] = c]
        /\ initDep' = [initDep EXCEPT ![p][id] = D]
        /\ LET I == 
-              { <<id2, phase[p][id2]>> : id2 \in Id :
-                  id2 # id /\ id2 \notin D /\
-                    ((phase[p][id2] = CommittedPhase 
-                      => ( cmd[p][id2] # Bottom /\ id \notin dep[p][id2] /\ Conflicts(c, cmd[p][id2]) ))
-                    /\ (phase[p][id2] # CommittedPhase 
-                      => initCmd[p][id2] # Bottom /\ id \notin initDep[p][id2] /\ Conflicts(c, initCmd[p][id2])))
+              { <<id2, phase[p][id2]>> : id2 \in { id3 \in Id :
+                  id3 # id /\ id3 \notin D /\
+                    ((phase[p][id3] = CommittedPhase 
+                      => ( cmd[p][id3] # Bottom /\ id \notin dep[p][id3] /\ Conflicts(c, cmd[p][id3]) ))
+                    /\ (phase[p][id3] # CommittedPhase 
+                      => initCmd[p][id3] # Bottom /\ id \notin initDep[p][id3] /\ Conflicts(c, initCmd[p][id3]))) }
               }
           IN
           /\ msgs' =
@@ -652,12 +650,12 @@ Next ==
           Submit(q, id, c)
 
     \/ \E p \in Proc, id \in Id :
-          StartRecover(p, id)
-          HandlePreAcceptOK(p, id)
-          HandleValidateOK(p, id)
-          HandlePostWaiting(p, id)
-          HandleRecoverOK(p, id)
-          HandleAcceptOK(p, id)
+          \/ StartRecover(p, id)
+          \/ HandlePreAcceptOK(p, id)
+          \/ HandleValidateOK(p, id)
+          \/ HandlePostWaiting(p, id)
+          \/ HandleRecoverOK(p, id)
+          \/ HandleAcceptOK(p, id)
 
 
 
