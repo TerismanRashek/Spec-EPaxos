@@ -126,7 +126,7 @@ VARIABLES
     CardinalityRmax,\* they only appear because I have the split the pseudocode of RecoverOK in 3 handlers and these local variables are lost from one handler to the other.    
     recoveryState  \* recoveryState[p][id] : variable to keep track of which step of the recoverOK handler p is in.
 
-CONSTANTS InitialrecoveryState, RecoverOKState, ValidateOKState, PostWaitingState
+CONSTANTS InitialRecoveryState, RecoverOKState, ValidateOKState, PostWaitingState
 
 vars ==
     << bal, abal, cmd, initCmd, dep, initDep, phase, msgs,
@@ -151,7 +151,7 @@ Init ==
     /\ Ivar = [p \in Proc |-> [id \in Id |-> {}]]
     /\ Qvar = [p \in Proc |-> [id \in Id |-> {}]]
     /\ CardinalityRmax = [p \in Proc |-> [id \in Id |-> 0]]
-    /\ recoveryState = [p \in Proc |-> [id \in Id |-> InitialrecoveryState]]
+    /\ recoveryState = [p \in Proc |-> [id \in Id |-> InitialRecoveryState]]
 
 (***************************************************************************)
 (* Helpers                                                                 *)
@@ -300,30 +300,16 @@ HandleAccept(m) ==
     but the \E b \in Nat is not okay. 
   *)
 HandleAcceptOK(p, id) ==
-    /\ LET m == CHOOSE m \in msgs : m.type = TypeAcceptOK /\ m.to = p /\ m.from = p /\ m.body.id = id 
-       IN
-       /\ LET b == m.body.b
-          IN
-            /\ bal[p][id] = b
-            /\ phase[p][id] = AcceptedPhase
-            /\ LET quorum ==
-                    { q2 \in Proc :
-                        \E k \in msgs :
-                            /\ k.type = TypeAcceptOK
-                            /\ k.body.id = id
-                            /\ k.to = p
-                            /\ k.from = q2
-                    }
-                IN
-                /\ IsQuorumSized(quorum)
-                /\ LET OKs == { k \in msgs :
-                        /\ k.type = TypeAcceptOK
-                        /\ k.to = p
-                        /\ k.from \in quorum
-                        /\ k.body.id = id
-                    }
-                    IN
-                    /\ msgs' = (msgs \cup {CommitMsg(p, q2, b, id, cmd[p][id], dep[p][id]) : q2 \in Proc }) \ OKs
+    /\ phase[p][id] = AcceptedPhase
+    /\ LET quorumOfMessages == { k \in msgs :
+        /\ k.type = TypeAcceptOK
+        /\ k.to = p
+        /\ k.body.b = bal[p][id] \*Ballot precondition is here
+        /\ k.body.id = id
+    }
+        IN
+        /\ IsQuorumSized(quorum)
+        /\ msgs' = (msgs \cup {CommitMsg(p, q2, b, id, cmd[p][id], dep[p][id]) : q2 \in Proc }) \ OKs
     /\ UNCHANGED << bal, phase, cmd, initCmd,
                 initDep, dep, abal, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, recoveryState  >>
 
@@ -360,7 +346,7 @@ StartRecover(p,id) ==
        IN
         /\ msgs' = msgs \cup { RecoverMsg(p,q,b,id) : q \in Proc }
         /\ recoveryState' = [recoveryState EXCEPT ![p][id] = RecoverOKState]
-        /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase,
+        /\ UNCHANGED << abal, bal, cmd, initCmd, dep, initDep, phase,
                             submitted, initCoord, Qvar, CardinalityRmax, Ivar  >>
 
 (***************************************************************************)
