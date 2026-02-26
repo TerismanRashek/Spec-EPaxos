@@ -8,7 +8,8 @@ CONSTANTS
     E,              \* e-fast parameter (E ≤ F)
     Cmd,            \* set of command payloads
     Id,             \* command identifiers  
-    NoCmd,           \* special value representing no command
+    Nop,           \* special value representing no command
+    Bottom,         \* special value for bottom command payload
     NoProc,          \* special value representing no process
     NumberOfRecoveryAttempts \* maximum number of recovery attempts per process and command to avoid state space explosion
 
@@ -136,8 +137,8 @@ vars ==
 Init ==
     /\ bal = [p \in Proc |-> [id \in Id |-> 0]]
     /\ abal = [p \in Proc |-> [id \in Id |-> 0]]
-    /\ cmd = [p \in Proc |-> [id \in Id |-> NoCmd]]
-    /\ initCmd = [p \in Proc |-> [id \in Id |-> NoCmd]]
+    /\ cmd = [p \in Proc |-> [id \in Id |-> Bottom]]
+    /\ initCmd = [p \in Proc |-> [id \in Id |-> Bottom]]
     /\ dep = [p \in Proc |-> [id \in Id |-> {}]]
     /\ initDep = [p \in Proc |-> [id \in Id |-> {}]]
     /\ phase = [p \in Proc |-> [id \in Id |-> InitialPhase]]
@@ -155,9 +156,12 @@ Init ==
 (***************************************************************************)
 
 Conflicts(c1, c2) ==
-    /\ c1 \in Cmd
-    /\ c2 \in Cmd
-    /\ c1 # c2
+    IF c1 = Bottom \/ c2 = Bottom THEN
+        FALSE
+    ELSE IF c1 = Nop \/ c2 = Nop THEN
+        TRUE
+    ELSE
+        c1 % 2 = c2 % 2
 
 Quorum(Q) == Cardinality(Q) >= Cardinality(Proc) - F
 FastQuorum(Q) == Cardinality(Q) >= Cardinality(Proc) - E
@@ -433,7 +437,7 @@ HandleRecoverOK(p, id) ==
                     \/ (initCoord[id] \in Q
                         /\ msgs' =
                             (msgs \ OKs) \cup
-                            { AcceptMsg(p, q2, b, id, NoCmd, {}) : q2 \in Proc })
+                            { AcceptMsg(p, q2, b, id, Nop, {}) : q2 \in Proc })
                     \/ (/\ LET Rmax == { q2 \in Q :
                                         \E n \in U :
                                             n.from = q2
@@ -477,9 +481,9 @@ HandleValidate(m) ==
               { <<id2, phase[p][id2]>> : id2 \in Id :
                   id2 # id /\ id2 \notin D /\
                     ((phase[p][id2] = CommittedPhase 
-                      => ( cmd[p][id2] # NoCmd /\ id \notin dep[p][id2] /\ Conflicts(c, cmd[p][id2]) ))
+                      => ( cmd[p][id2] # Bottom /\ id \notin dep[p][id2] /\ Conflicts(c, cmd[p][id2]) ))
                     /\ (phase[p][id2] # CommittedPhase 
-                      => initCmd[p][id2] # NoCmd /\ id \notin initDep[p][id2] /\ Conflicts(c, initCmd[p][id2])))
+                      => initCmd[p][id2] # Bottom /\ id \notin initDep[p][id2] /\ Conflicts(c, initCmd[p][id2])))
               }
           IN
           /\ msgs' =
@@ -512,7 +516,7 @@ HandleValidateOK(p, id) ==
                     { AcceptMsg(p, q2, b, id, c, D) : q2 \in Proc })
             \/ (((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
                 /\ msgs' = (msgs \ OKs) \cup
-                    { AcceptMsg(p, q2, b, id, NoCmd, {}) : q2 \in Proc })
+                    { AcceptMsg(p, q2, b, id, Nop, {}) : q2 \in Proc })
             \/ (msgs' = (msgs \ OKs) \cup
                 { WaitingMsg(p, q2, id, CardinalityRmax[p][id]) : q2 \in Proc })
 
@@ -533,16 +537,16 @@ HandlePostWaiting(p, id) ==
         \/ (\E x \in I :
                 x[1] # id /\
                 x[2] = CommittedPhase /\
-                cmd[p][x[1]] # NoCmd /\
+                cmd[p][x[1]] # Nop /\
                 id \notin dep[p][x[1]]
             /\ msgs' =
                     msgs \cup
-                    { AcceptMsg(p, q, bal[p][id], id, NoCmd, {}) : q \in Proc })
+                    { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc })
 
         \/ (\A x \in I :
                 x[1] # id =>
                 (x[2] = CommittedPhase /\
-                    (cmd[p][x[1]] = NoCmd \/ id \in dep[p][x[1]]))
+                    (cmd[p][x[1]] = Nop \/ id \in dep[p][x[1]]))
             /\ msgs' =
                     msgs \cup
                     { AcceptMsg(p, q, bal[p][id], id, cmd[p][id], dep[p][id])
@@ -557,7 +561,7 @@ HandlePostWaiting(p, id) ==
                     m2.body.k > N - F - E
             /\ msgs' =
                     msgs \cup
-                    { AcceptMsg(p, q, bal[p][id], id, NoCmd, {}) : q \in Proc })
+                    { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc })
 
         \/ (\E m2 \in msgs :
                 m2.type = TypeRecoverOK /\
@@ -576,7 +580,7 @@ HandlePostWaiting(p, id) ==
                     { AcceptMsg(p, q, bal[p][id], id,
                                 m2.body.cmd, m2.body.dep) : q \in Proc }
                 ELSE
-                    { AcceptMsg(p, q, bal[p][id], id, NoCmd, {}) : q \in Proc })
+                    { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc })
 
     /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
                         submitted, initCoord, recovered >>
@@ -614,8 +618,8 @@ TypeInv ==
     /\ \A p \in Proc, id \in Id :
         /\ bal[p][id] >= 0 
         /\ abal[p][id] >= 0
-        /\ (cmd[p][id] \in Cmd \/ cmd[p][id] = NoCmd)
-        /\ (initCmd[p][id] \in Cmd \/ initCmd[p][id] = NoCmd)
+        /\ (cmd[p][id] \in Cmd \/ cmd[p][id] = Nop)
+        /\ (initCmd[p][id] \in Cmd \/ initCmd[p][id] = Nop)
         /\ dep[p][id] \subseteq Id
         /\ initDep[p][id] \subseteq Id
         /\ phase[p][id] \in {InitialPhase, PreAcceptedPhase, AcceptedPhase, CommittedPhase}
