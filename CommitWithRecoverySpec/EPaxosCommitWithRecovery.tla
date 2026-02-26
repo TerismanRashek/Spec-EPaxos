@@ -303,11 +303,10 @@ HandleAcceptOK(p, id) ==
         /\ k.type = TypeAcceptOK
         /\ k.to = p
         /\ k.body.b = bal[p][id] \*Ballot precondition is here
-        /\ k.body.id = id
-    }
+        /\ k.body.id = id }   
         IN
-        /\ IsQuorumSized(quorum)
-        /\ msgs' = (msgs \cup {CommitMsg(p, q2, b, id, cmd[p][id], dep[p][id]) : q2 \in Proc }) \ OKs
+        /\ IsQuorumSized(quorumOfMessages)
+        /\ msgs' = (msgs \cup {CommitMsg(p, q2, bal[p][id], id, cmd[p][id], dep[p][id]) : q2 \in Proc }) \ quorumOfMessages
     /\ UNCHANGED << bal, phase, cmd, initCmd,
                 initDep, dep, abal, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, recoveryState  >>
 
@@ -390,8 +389,8 @@ HandleRecoverOK(p, id) ==
                                 n.from = q2
                                 /\ n.body.phaseq = CommittedPhase
                                 /\ msgs' =
-                                    (msgs \ OKs) \cup
-                                    { CommitMsg(p, q3, b, id, n.body.cq, n.body.depq)
+                                    (msgs \ quorumOfMessages) \cup
+                                    { CommitMsg(p, q3, bal[p][id], id, n.body.cq, n.body.depq)
                                         : q3 \in Proc })
 
                 \/ (\E q2 \in Proc :
@@ -399,14 +398,14 @@ HandleRecoverOK(p, id) ==
                                 n.from = q2
                                 /\ n.body.phaseq = AcceptedPhase
                                 /\ msgs' =
-                                    (msgs \ OKs) \cup
-                                    { AcceptMsg(p, q3, b, id, n.body.cq, n.body.depq)
+                                    (msgs \ quorumOfMessages) \cup
+                                    { AcceptMsg(p, q3, bal[p][id], id, n.body.cq, n.body.depq)
                                         : q3 \in Proc })
 
                 \/ (initCoord[id] \in Q
                     /\ msgs' =
-                        (msgs \ OKs) \cup
-                        { AcceptMsg(p, q2, b, id, Nop, {}) : q2 \in Proc })
+                        (msgs \ quorumOfMessages) \cup
+                        { AcceptMsg(p, q2, bal[p][id], id, Nop, {}) : q2 \in Proc })
                 \/ (/\ LET Rmax == { q2 \in Q :
                                     \E n \in U :
                                         n.from = q2
@@ -423,8 +422,8 @@ HandleRecoverOK(p, id) ==
                         /\ CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
                         /\ recoveryState' = [recoveryState EXCEPT ![p][id] = ValidateOKState]
                         /\ msgs' =
-                                (msgs \ OKs) \cup
-                                { ValidateMsg(p, q2, b, id, c, D)
+                                (msgs \ quorumOfMessages) \cup
+                                { ValidateMsg(p, q2, bal[p][id], id, c, D)
                                     : q2 \in Q })
        /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
                         submitted, initCoord, recovered, Ivar >>
@@ -474,9 +473,9 @@ HandleValidateOK(p, id) ==
                 /\ m.to = p 
                 /\ m.body.id = id 
                 /\ m.body.b = bal[p][id] } \* must recheck Im still in the same ballot
-            I == UNION { m.body.Iq : m \in OKs }
+            I == UNION { m.body.Iq : m \in quorumOfMessages }
         IN
-        LET m == CHOOSE m \in OKs : TRUE
+        LET m == CHOOSE m \in quorumOfMessages : TRUE
         IN 
         LET c == m.body.c
             D == m.body.D
@@ -484,12 +483,12 @@ HandleValidateOK(p, id) ==
         /\ recoveryState' = [recoveryState EXCEPT ![p][id] = PostWaitingState] 
         /\ Ivar' = [Ivar EXCEPT ![p][id] = I]
         /\  \/ (I = {}
-                /\ msgs' = (msgs \ OKs) \cup
+                /\ msgs' = (msgs \ quorumOfMessages) \cup
                     { AcceptMsg(p, q, b, id, c, D) : q \in Proc })
             \/ (((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
-                /\ msgs' = (msgs \ OKs) \cup
+                /\ msgs' = (msgs \ quorumOfMessages) \cup
                     { AcceptMsg(p, q, b, id, Nop, {}) : q \in Proc })
-            \/ (msgs' = (msgs \ OKs) \cup
+            \/ (msgs' = (msgs \ quorumOfMessages) \cup
                 { WaitingMsg(p, q, id, CardinalityRmax[p][id]) : q \in Proc })
 
 
