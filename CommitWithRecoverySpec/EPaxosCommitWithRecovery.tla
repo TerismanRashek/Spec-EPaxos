@@ -165,9 +165,9 @@ IsQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - F
 IsFastQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - E
 
 ConflictingIds(p, c) ==
-    { id2 \in Id :
-        /\ phase[p][id2] # InitialPhase 
-        /\ Conflicts(cmd[p][id2], c)
+    { id \in Id :
+        /\ phase[p][id] # InitialPhase 
+        /\ Conflicts(cmd[p][id], c)
     }
 
 (***************************************************************************)
@@ -330,7 +330,8 @@ HandleCommit(m) ==
 (***************************************************************************)
 (* 43–45 StartRecover                                                      *)
 (***************************************************************************)
-StartRecover(p,id) ==
+StartRecover(p, id) ==
+    /\ phase[p][id] # InitialPhase
     \* We count the number of times a process has tried to recover a command to avoid model checker exploding
     /\ recovered[p][id] < NumberOfRecoveryAttempts
     /\ recovered' = [recovered EXCEPT ![p][id] = recovered[p][id] + 1]
@@ -601,6 +602,11 @@ TypeInv ==
         /\ initDep[p][id] \subseteq Id
         /\ phase[p][id] \in {InitialPhase, PreAcceptedPhase, AcceptedPhase, CommittedPhase}
         /\ recovered[p][id] >= 0 /\ recovered[p][id] <= NumberOfRecoveryAttempts
+        /\ Ivar[p][id] \subseteq { <<id2, phase[p][id2]>> : id2 \in Id }
+        /\ Qvar[p][id] \subseteq Proc
+        /\ CardinalityRmax[p][id] >= 0 /\ CardinalityRmax[p][id] <= Cardinality(Proc)
+    
+    /\ selfAddressedMessageFlag \in BOOLEAN 
 
     /\ \A m \in msgs :
         m.type \in {TypePreAccept, TypePreAcceptOK, TypeAccept, TypeAcceptOK, TypeCommit,
@@ -612,33 +618,13 @@ TypeInv ==
     /\ submitted \subseteq Id
 
 
+
 (***************************************************************************)
 (* Next State Relation                                                     *)
 (***************************************************************************)
 
 Next ==
     
-    \/ selfAddressedMessageFlag
-        /\  IF   messageToDeliver.type = TypeCommit THEN 
-                    LET m == CHOOSE m \in msgs :
-                                    /\ m.type = TypeCommit
-                                    /\ m.from = messageToDeliver.p
-                                    /\ m.body.id = messageToDeliver.id
-                                    /\ m.body.c = messageToDeliver.c
-                                    /\ m.body.D = messageToDeliver.D
-                                    /\ m.body.b = messageToDeliver.b
-                    IN HandleCommit(m)
-            ELSE IF messageToDeliver.type = TypeAccept THEN 
-                    LET m == CHOOSE m \in msgs :
-                                    /\ m.type = TypeAccept
-                                    /\ m.from = messageToDeliver.p
-                                    /\ m.body.id = messageToDeliver.id
-                                    /\ m.body.c = messageToDeliver.c
-                                    /\ m.body.D = messageToDeliver.D
-                                    /\ m.body.b = messageToDeliver.b
-                    IN HandleCommit(m)
-            ELSE TRUE
-        
 
     \/ ~selfAddressedMessageFlag 
         /\ (\/ \E m \in msgs :
@@ -658,11 +644,29 @@ Next ==
                 \/ HandlePostWaiting(p, id)
                 \/ HandleRecoverOK(p, id)
                 \/ HandleAcceptOK(p, id)
-            )      
+            )
 
-
-
-
+    \/ selfAddressedMessageFlag
+        /\  IF   messageToDeliver.type = TypeCommit THEN 
+                    LET m == CHOOSE m \in msgs :
+                                    /\ m.type = TypeCommit
+                                    /\ m.from = messageToDeliver.p
+                                    /\ m.body.id = messageToDeliver.id
+                                    /\ m.body.c = messageToDeliver.c
+                                    /\ m.body.D = messageToDeliver.D
+                                    /\ m.body.b = messageToDeliver.b
+                    IN HandleCommit(m)
+            ELSE IF messageToDeliver.type = TypeAccept THEN 
+                    LET m == CHOOSE m \in msgs :
+                                    /\ m.type = TypeAccept
+                                    /\ m.from = messageToDeliver.p
+                                    /\ m.body.id = messageToDeliver.id
+                                    /\ m.body.c = messageToDeliver.c
+                                    /\ m.body.D = messageToDeliver.D
+                                    /\ m.body.b = messageToDeliver.b
+                    IN HandleAccept(m)
+            ELSE UNCHANGED <<vars>>
+              
 
 Spec ==
     Init /\ [][Next]_<< vars >>
