@@ -531,6 +531,7 @@ HandlePostWaiting(p, id) ==
                         id \notin dep[p][x[1]]
                     /\ msgs' = msgs \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc }
                     /\ selfAddressedMessageFlag' = TRUE
+                    /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE]
                     /\ messageToDeliver' = [ type |-> TypeAccept, p |-> p, id |-> id, b |-> bal[p][id], c |-> Nop, D |-> {} ])
 
                 \/ (\A x \in I :
@@ -539,6 +540,7 @@ HandlePostWaiting(p, id) ==
                             (cmd[p][x[1]] = Nop \/ id \in dep[p][x[1]]))
                     /\ msgs' =  msgs \cup { AcceptMsg(p, q, bal[p][id], id, cmd[p][id], dep[p][id]) : q  \in Proc }
                     /\ selfAddressedMessageFlag' = TRUE
+                    /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE]
                     /\ messageToDeliver' = [ type |-> TypeAccept, p |-> p, id |-> id, b |-> bal[p][id], c |-> cmd[p][id], D |-> dep[p][id] ])
 
                 \/ (\E x \in I :
@@ -550,6 +552,7 @@ HandlePostWaiting(p, id) ==
                             m2.body.k > N - F - E
                     /\ msgs' =  msgs \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc }
                     /\ selfAddressedMessageFlag' = TRUE
+                    /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE]
                     /\ messageToDeliver' = [ type |-> TypeAccept, p |-> p, id |-> id, b |-> bal[p][id], c |-> Nop, D |-> {} ])
 
                 \/ (\E m2 \in msgs :
@@ -561,20 +564,23 @@ HandlePostWaiting(p, id) ==
                         /\  IF m2.body.phaseq = CommittedPhase THEN
                                 /\ msgs' = msgs \cup {CommitMsg(p, q, bal[p][id], id, m2.body.cq, m2.body.depq) : q \in Proc }
                                 /\ selfAddressedMessageFlag' = TRUE
+                                /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE]
                                 /\ messageToDeliver' = [ type |-> TypeCommit, p |-> p, id |-> id, b |-> bal[p][id], c |-> m2.body.cq, D |-> m2.body.depq ]
                             ELSE IF m2.body.phaseq = AcceptedPhase THEN
                                 /\ msgs' = msgs \cup {AcceptMsg(p, q, bal[p][id], id, m2.body.cq, m2.body.depq) : q \in Proc }
                                 /\ selfAddressedMessageFlag' = TRUE
+                                /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE]
                                 /\ messageToDeliver' = [ type |-> TypeAccept, p |-> p, id |-> id, b |-> bal[p][id], c |-> m2.body.cq, D |-> m2.body.depq ]
                             ELSE
                                 /\ msgs' = msgs \cup {AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc }
                                 /\ selfAddressedMessageFlag' = TRUE
+                                /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE]
                                 /\ messageToDeliver' = [ type |-> TypeAccept, p |-> p, id |-> id, b |-> bal[p][id], c |-> Nop, D |-> {} ]
                                 )
                 
 
     /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,
-                        submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag >>
+                        submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar >>
 
 
 (***************************************************************************)
