@@ -161,7 +161,7 @@ Conflicts(c1, c2) ==
     ELSE IF c1 = Nop \/ c2 = Nop THEN
         TRUE
     ELSE
-        c1 % 2 = c2 % 2
+        c1 # c2
 
 IsQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - F
 IsFastQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - E
@@ -182,6 +182,7 @@ ConflictingIds(p, c) ==
 
 Submit(p, id, c) ==
     /\ id \notin submitted
+    /\ id = c \*for ids and commands to match when I test, I should problably change this to be id and command pairs in config.
     /\ LET D0 == ConflictingIds(p, c)
        IN
           /\ submitted' = submitted \cup {id}
@@ -333,6 +334,7 @@ HandleCommit(m) ==
 (***************************************************************************)
 StartRecover(p, id) ==
     /\ phase[p][id] # InitialPhase
+    /\ phase[p][id] # CommittedPhase
     \* We count the number of times a process has tried to recover a command to avoid model checker exploding
     /\ recovered[p][id] < NumberOfRecoveryAttempts
     /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE] 
@@ -341,8 +343,10 @@ StartRecover(p, id) ==
     /\ LET  b == IF bal[p][id] = 0 THEN p ELSE bal[p][id] + Cardinality(Proc)
        IN
         /\ msgs' = msgs \cup { RecoverMsg(p,q,b,id) : q \in Proc }
+        /\ selfAddressedMessageFlag' = TRUE
+        /\ messageToDeliver' = [ type |-> TypeRecover, p |-> p, id |-> id, b |-> b]
         /\ UNCHANGED << abal, bal, cmd, initCmd, dep, initDep, phase,
-                            submitted, initCoord, Qvar, CardinalityRmax, Ivar, selfAddressedMessageFlag, messageToDeliver >>
+                            submitted, initCoord, Qvar, CardinalityRmax, Ivar >>
 
 (***************************************************************************)
 (* 46–49 HandleRecover                                                     *)
@@ -356,13 +360,11 @@ HandleRecover(m) ==
        IN
        /\ bal[p][id] < b
        /\ bal' = [bal EXCEPT ![p][id] = b]
-       /\ msgs' =
-           (msgs \ {m}) \cup
-           { RecoverOKMsg(p,q,b,id,abal[p][id],
-                          cmd[p][id],dep[p][id],initDep[p][id],
-                          phase[p][id]) }
+       /\ msgs' = (msgs \ {m}) \cup { RecoverOKMsg(p,q,b,id,abal[p][id],cmd[p][id],dep[p][id],initDep[p][id],phase[p][id]) }
+       /\ selfAddressedMessageFlag' = FALSE
+       /\ messageToDeliver' = 0
        /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase,
-                        submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, selfAddressedMessageFlag, messageToDeliver, postWaitingFlag >>
+                        submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag >>
 
 (***************************************************************************)
 (* 50–60 HandleRecoverOK                                                   *)
@@ -433,7 +435,8 @@ HandleRecoverOK(p, id) ==
                             /\ Qvar' = [Qvar EXCEPT ![p][id] = Q]
                             /\ CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
                             /\ msgs' = (msgs \ quorumOfMessages) \cup { ValidateMsg(p, q, bal[p][id], id, c, D) : q \in Q }
-                            /\ UNCHANGED <<selfAddressedMessageFlag, messageToDeliver>>
+                            /\ selfAddressedMessageFlag' = TRUE
+                            /\ messageToDeliver' = [ type |-> TypeValidate, p |-> p, id |-> id, b |-> bal[p][id], c |-> c, D |-> D   ]
                 
                 ELSE (/\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc }
                     /\ selfAddressedMessageFlag' = TRUE
@@ -462,14 +465,16 @@ HandleValidate(m) ==
               { <<id2, phase[p][id2]>> : id2 \in { id3 \in Id :
                   id3 # id /\ id3 \notin D /\
                     ((phase[p][id3] = CommittedPhase 
-                      => ( cmd[p][id3] # Bottom /\ id \notin dep[p][id3] /\ Conflicts(c, cmd[p][id3]) ))
+                      => ( cmd[p][id3] # Nop /\ id \notin dep[p][id3] /\ Conflicts(c, cmd[p][id3]) ))
                     /\ (phase[p][id3] # CommittedPhase 
                       => initCmd[p][id3] # Bottom /\ id \notin initDep[p][id3] /\ Conflicts(c, initCmd[p][id3]))) }
               }
           IN
           /\ msgs' = (msgs \ {m}) \cup { ValidateOKMsg(p, q, b, id, c, D, I) }
+          /\ selfAddressedMessageFlag' = FALSE
+          /\ messageToDeliver' = 0
           /\ UNCHANGED << bal, abal, dep, phase,
-                        submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar , selfAddressedMessageFlag, messageToDeliver, postWaitingFlag >>
+                        submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag >>
 
 (***************************************************************************)
 (* 61–68 HandleValidateOK                                                  *)
@@ -646,7 +651,6 @@ TypeInv ==
 
 Next ==
     
-
     \/ ~selfAddressedMessageFlag 
         /\ (\/ \E m \in msgs :
                 \/ HandlePreAccept(m)
@@ -673,6 +677,7 @@ Next ==
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypeCommit
                                     /\ m.from = messageToDeliver.p
+                                    /\ m.to = messageToDeliver.p
                                     /\ m.body.id = messageToDeliver.id
                                     /\ m.body.c = messageToDeliver.c
                                     /\ m.body.D = messageToDeliver.D
@@ -682,12 +687,33 @@ Next ==
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypeAccept
                                     /\ m.from = messageToDeliver.p
+                                    /\ m.to = messageToDeliver.p
                                     /\ m.body.id = messageToDeliver.id
                                     /\ m.body.c = messageToDeliver.c
                                     /\ m.body.D = messageToDeliver.D
                                     /\ m.body.b = messageToDeliver.b
                     IN HandleAccept(m)
-            ELSE UNCHANGED <<vars>>)
+            ELSE IF messageToDeliver.type = TypeValidate THEN 
+                    LET m == CHOOSE m \in msgs :
+                                    /\ m.type = TypeValidate
+                                    /\ m.from = messageToDeliver.p
+                                    /\ m.to = messageToDeliver.p
+                                    /\ m.body.id = messageToDeliver.id
+                                    /\ m.body.c = messageToDeliver.c
+                                    /\ m.body.D = messageToDeliver.D
+                                    /\ m.body.b = messageToDeliver.b
+                    IN HandleValidate(m)
+            ELSE IF messageToDeliver.type = TypeRecover THEN 
+                    LET m == CHOOSE m \in msgs :
+                                    /\ m.type = TypeRecover
+                                    /\ m.from = messageToDeliver.p
+                                    /\ m.to = messageToDeliver.p
+                                    /\ m.body.id = messageToDeliver.id
+                                    /\ m.body.b = messageToDeliver.b
+                    IN HandleRecover(m)
+            ELSE UNCHANGED <<vars>>
+            
+        )
               
 
 Spec ==
