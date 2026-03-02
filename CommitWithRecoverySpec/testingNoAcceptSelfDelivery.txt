@@ -12396,7 +12396,7 @@ State 69: <Next line 660, col 8 to line 679, col 13 of module EPaxosCommitWithRe
      body |-> [id |-> 2, c |-> 0, D |-> {}, b |-> 11] ],
    "HandleAccept" >>
 /\ recovered = <<<<0, 1>>, <<1, 1>>, <<1, 1>>, <<1, 0>>, <<1, 1>>>>
-/\ initCoord = <<3, 2>>
+/\ initCoord = <<3, >2>
 
 State 70: <Next line 660, col 8 to line 679, col 13 of module EPaxosCommitWithRecovery>
 /\ phase = <<<<4, 3>>, <<4, 3>>, <<4, 3>>, <<4, 3>>, <<4, 3>>>>
