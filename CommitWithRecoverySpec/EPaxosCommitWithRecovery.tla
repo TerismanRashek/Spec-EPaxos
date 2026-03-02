@@ -485,40 +485,41 @@ HandleValidate(m) ==
 (* 61–68 HandleValidateOK                                                  *)
 (***************************************************************************)
 HandleValidateOK(p, id) ==
-    /\  LET Q  == Qvar[p][id]
+    /\  LET Q == Qvar[p][id]
         IN 
-        LET quorumOfMessages ==
-            { m \in msgs :
-                /\ m.type = TypeValidateOK 
-                /\ m.to = p 
-                /\ m.body.id = id 
-                /\ m.body.b = bal[p][id] } \* must recheck Im still in the same ballot
-            I == UNION { m.body.Iq : m \in quorumOfMessages }
-        IN
-        /\  IsQuorumSized(quorumOfMessages)     
-        /\  LET m == CHOOSE m \in quorumOfMessages : TRUE
-            IN 
-            LET c == m.body.c
-                D == m.body.D
-            IN      
-            /\  IF (I = {}) THEN
-                    /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, c, D) : q \in Proc }
-                    /\ selfAddressedMessageFlag' = TRUE
-                    /\ messageToDeliver' = [ type |-> TypeAccept, p |-> p, id |-> id, b |-> bal[p][id], c |-> c, D |-> D ]
-                    /\ UNCHANGED <<Ivar, postWaitingFlag>>
-                            
-                ELSE IF 
-                    ((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
-                    THEN
-                    /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc }
-                    /\ selfAddressedMessageFlag' = TRUE
-                    /\ messageToDeliver' = [ type |-> TypeAccept, p |-> p, id |-> id, b |-> bal[p][id], c |-> Nop, D |-> {} ]    
-                    /\ UNCHANGED <<Ivar, postWaitingFlag>>
-                            
-                ELSE (/\ Ivar' = [Ivar EXCEPT ![p][id] = I]
-                    /\ msgs' = (msgs \ quorumOfMessages) \cup { WaitingMsg(p, q, id, CardinalityRmax[p][id]) : q \in Proc }
-                    /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = TRUE]
-                    /\ UNCHANGED <<selfAddressedMessageFlag, messageToDeliver>>)
+        /\ IsQuorumSized(Q)
+        /\  LET quorumOfMessages ==
+                { m \in msgs :
+                    /\ m.type = TypeValidateOK 
+                    /\ m.to = p 
+                    /\ m.body.id = id 
+                    /\ m.body.b = bal[p][id] } \* must recheck Im still in the same ballot
+                I == UNION { m.body.Iq : m \in quorumOfMessages }
+            IN
+            /\  {n.from : n \in quorumOfMessages} = Q \* check that exactly Q responded
+            /\  LET m == CHOOSE m \in quorumOfMessages : TRUE
+                IN 
+                LET c == m.body.c
+                    D == m.body.D
+                IN      
+                /\  IF (I = {}) THEN
+                        /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, c, D) : q \in Proc }
+                        /\ selfAddressedMessageFlag' = TRUE
+                        /\ messageToDeliver' = [ type |-> TypeAccept, p |-> p, id |-> id, b |-> bal[p][id], c |-> c, D |-> D ]
+                        /\ UNCHANGED <<Ivar, postWaitingFlag>>
+                                
+                    ELSE IF 
+                        ((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
+                        THEN
+                        /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc }
+                        /\ selfAddressedMessageFlag' = TRUE
+                        /\ messageToDeliver' = [ type |-> TypeAccept, p |-> p, id |-> id, b |-> bal[p][id], c |-> Nop, D |-> {} ]    
+                        /\ UNCHANGED <<Ivar, postWaitingFlag>>
+                                
+                    ELSE (/\ Ivar' = [Ivar EXCEPT ![p][id] = I]
+                        /\ msgs' = (msgs \ quorumOfMessages) \cup { WaitingMsg(p, q, id, CardinalityRmax[p][id]) : q \in Proc }
+                        /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = TRUE]
+                        /\ UNCHANGED <<selfAddressedMessageFlag, messageToDeliver>>)
 
 
     /\ UNCHANGED << bal, abal, cmd, initCmd, dep, initDep, phase,submitted, initCoord, recovered, Qvar, CardinalityRmax, recoveryAttemptBal>>
@@ -690,7 +691,7 @@ Next ==
                                     /\ m.body.D = messageToDeliver.D
                                     /\ m.body.b = messageToDeliver.b
                     IN (HandleCommit(m) /\ lastMessageHandled' = <<m, "HandleCommit">>)
-            (* ELSE IF messageToDeliver.type = TypeAccept THEN 
+            ELSE IF messageToDeliver.type = TypeAccept THEN 
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypeAccept
                                     /\ m.from = messageToDeliver.p
@@ -699,7 +700,7 @@ Next ==
                                     /\ m.body.c = messageToDeliver.c
                                     /\ m.body.D = messageToDeliver.D
                                     /\ m.body.b = messageToDeliver.b
-                    IN (HandleAccept(m) /\ lastMessageHandled' = <<m, "HandleAccept">>) *)
+                    IN (HandleAccept(m) /\ lastMessageHandled' = <<m, "HandleAccept">>)
             ELSE IF messageToDeliver.type = TypeValidate THEN 
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypeValidate
