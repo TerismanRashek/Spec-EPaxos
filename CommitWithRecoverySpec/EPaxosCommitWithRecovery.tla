@@ -691,7 +691,7 @@ Next ==
                                     /\ m.body.D = messageToDeliver.D
                                     /\ m.body.b = messageToDeliver.b
                     IN (HandleCommit(m) /\ lastMessageHandled' = <<m, "HandleCommit">>)
-            ELSE IF messageToDeliver.type = TypeAccept THEN 
+            (* ELSE IF messageToDeliver.type = TypeAccept THEN 
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypeAccept
                                     /\ m.from = messageToDeliver.p
@@ -700,7 +700,7 @@ Next ==
                                     /\ m.body.c = messageToDeliver.c
                                     /\ m.body.D = messageToDeliver.D
                                     /\ m.body.b = messageToDeliver.b
-                    IN (HandleAccept(m) /\ lastMessageHandled' = <<m, "HandleAccept">>)
+                    IN (HandleAccept(m) /\ lastMessageHandled' = <<m, "HandleAccept">>) *)
             ELSE IF messageToDeliver.type = TypeValidate THEN 
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypeValidate
