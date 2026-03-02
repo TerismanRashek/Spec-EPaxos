@@ -711,14 +711,14 @@ Next ==
                                     /\ m.body.D = messageToDeliver.D
                                     /\ m.body.b = messageToDeliver.b
                     IN (HandleValidate(m) /\ lastMessageHandled' = <<m, "HandleValidate">>)
-(*             ELSE IF messageToDeliver.type = TypeRecover THEN 
+            ELSE IF messageToDeliver.type = TypeRecover THEN 
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypeRecover
                                     /\ m.from = messageToDeliver.p
                                     /\ m.to = messageToDeliver.p
                                     /\ m.body.id = messageToDeliver.id
                                     /\ m.body.b = messageToDeliver.b
-                    IN (HandleRecover(m) /\ lastMessageHandled' = <<m, "HandleRecover">>) *)
+                    IN (HandleRecover(m) /\ lastMessageHandled' = <<m, "HandleRecover">>)
             ELSE IF messageToDeliver.type = TypePreAccept THEN 
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypePreAccept
