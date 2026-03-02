@@ -173,7 +173,6 @@ IsFastQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - E
 
 ConflictingIds(p, c) ==
     { id \in Id :
-        /\ phase[p][id] # InitialPhase 
         /\ Conflicts(cmd[p][id], c)
     }
 
@@ -691,7 +690,7 @@ Next ==
                                     /\ m.body.D = messageToDeliver.D
                                     /\ m.body.b = messageToDeliver.b
                     IN (HandleCommit(m) /\ lastMessageHandled' = <<m, "HandleCommit">>)
-            ELSE IF messageToDeliver.type = TypeAccept THEN 
+            (* ELSE IF messageToDeliver.type = TypeAccept THEN 
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypeAccept
                                     /\ m.from = messageToDeliver.p
@@ -700,7 +699,7 @@ Next ==
                                     /\ m.body.c = messageToDeliver.c
                                     /\ m.body.D = messageToDeliver.D
                                     /\ m.body.b = messageToDeliver.b
-                    IN (HandleAccept(m) /\ lastMessageHandled' = <<m, "HandleAccept">>)
+                    IN (HandleAccept(m) /\ lastMessageHandled' = <<m, "HandleAccept">>) *)
             ELSE IF messageToDeliver.type = TypeValidate THEN 
                     LET m == CHOOSE m \in msgs :
                                     /\ m.type = TypeValidate
@@ -728,7 +727,11 @@ Next ==
                                     /\ m.body.c = messageToDeliver.c
                                     /\ m.body.D = messageToDeliver.D
                     IN (HandlePreAccept(m) /\ lastMessageHandled' = <<m, "HandlePreAccept">>)
-            ELSE UNCHANGED <<vars>>
+            ELSE    /\ selfAddressedMessageFlag' = FALSE 
+                    /\ messageToDeliver' = 0
+                    /\ UNCHANGED  << bal, abal, cmd, initCmd, dep, initDep, phase, msgs,
+                                                    submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag,
+                                                    lastMessageHandled, recoveryAttemptBal >>
             
         )
               
