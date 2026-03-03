@@ -1,9 +1,8 @@
 # Spec-EPaxos
 
-The recovery protocol folder contains the full Commit + Recovery spec folder.
+The CommitWithRecoverySpec folder contains the full Commit + Recovery spec folder.
 
-There are three existing modules for the execution, the commit, and the recovery protocols of EPaxos,  There is also a SMRspec model in the SMRSpec folder (first step I did, mostly for training).
-The OneSystemSpec folder is an unsuccessful attempt to use modules properly in building my spec.
+There are three existing specs for the execution, the commit part by itself, and the commit + recovery protocols of EPaxos,  There is also a SMRspec model in the SMRSpec folder (first step I did, mostly for training).
 
 **To run the model**, use the following command as a template (the tla2tools jar is inncluded in the folder), or use ./run.sh :
 java -cp PATH_TO_tla2tools.jar/tla2tools.jar tlc2.TLC SPEC_FILE_NAME.tla
@@ -47,18 +46,10 @@ The commit protocol is responsible for:
 
 This folder contains the **full EPaxos specification**, including:
 
-- commit protocol
-- recovery protocol
-- ballot escalation
-- validation and waiting logic
 
 This is the most complete and complex model in the repository.
 
-The code has the exact same code that the commit protocol had, with the recovery part added.
-
-### EPaxosRecoveryWithHistory
-
-This is an attempt to force a history to reach an interesting configuration.
+The code has the same code that the commit protocol had, with the recovery part added.
 
 ### Misc
 
