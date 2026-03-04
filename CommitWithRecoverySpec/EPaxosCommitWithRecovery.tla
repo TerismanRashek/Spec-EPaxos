@@ -291,12 +291,6 @@ HandleAccept(m) ==
 (* 34–36 HandleAcceptOk                                                    *)
 (***************************************************************************)
 
-(*  Here, it's very clunky to go find the self sent message only to recover the b value, but if I include it in the parameters of the handler
- the precondition would make it correct but then the next state relation needs something like :
-     \/ \E p \in Proc, id \in ID, b \in Nat
-            HandleAcceptOK(p, id, b)
-    but the \E b \in Nat is not okay. 
-  *)
 HandleAcceptOK(p, id) ==
     /\ phase[p][id] = AcceptedPhase
     /\ LET quorumOfMessages == { k \in msgs :
@@ -613,13 +607,6 @@ Visibility ==
     /\ Conflicts(cmd[p][id], cmd[q][id2])
     => \/ id \in dep[q][id2]
        \/ id2 \in dep[p][id]
-
-
-Liveness ==
-    \A id \in Id :
-      id \in submitted
-      => \E p \in Proc :
-           phase[p][id] = CommittedPhase
 
 TypeInv ==
     /\ \A p \in Proc, id \in Id :
