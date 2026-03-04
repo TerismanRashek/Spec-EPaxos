@@ -245,16 +245,16 @@ HandlePreAcceptOK(p, id) ==
                 { quorum \in  SUBSET(quorumOfMessages) : 
                                             /\ IsFastQuorumSized(quorum)
                                             /\ \A m \in quorum : m.body.Dq = initDep[p][id]  }
-           IN
-            /\ IF \E fastQuorum \in fastQuorums : IsFastQuorumSized(fastQuorum) THEN
+            IN
+            \/  \E fastQuorum \in fastQuorums :
                     LET Dfinal == UNION { m.body.Dq : m \in fastQuorum }
                     IN
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc }
                     /\ selfAddressedMessageFlag' = TRUE
                     /\ messageToDeliver' = [ type |-> TypeCommit, p |-> p, id |-> id, b |-> 0, c |-> cmd[p][id], D |-> Dfinal ]
-               ELSE
-                    \* If fast path fails, I just take the quorum with all the messages, there is no need to check in the same way as the fast path        
-                    LET Dfinal == UNION { m.body.Dq : m \in quorumOfMessages }
+            \/  /\  fastQuorums = {} 
+                \* If fast path fails, I just take the quorum with all the messages, there is no need to check in the same way as the fast path        
+                /\  LET Dfinal == UNION { m.body.Dq : m \in quorumOfMessages }
                     IN
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc }
                     /\ selfAddressedMessageFlag' = TRUE
