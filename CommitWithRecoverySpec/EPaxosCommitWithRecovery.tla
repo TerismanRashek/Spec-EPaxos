@@ -232,7 +232,6 @@ HandlePreAccept(m) ==
 HandlePreAcceptOK(p, id) ==
     /\ bal[p][id] = 0
     /\ phase[p][id] = PreAcceptedPhase
-    /\ p = initCoord[id]
     /\ LET quorumOfMessages ==
             {  m \in msgs :
                     /\ m.type = TypePreAcceptOK
@@ -247,10 +246,8 @@ HandlePreAcceptOK(p, id) ==
                                             /\ IsFastQuorumSized(quorum)
                                             /\ \A m \in quorum : m.body.Dq = initDep[p][id]  }
            IN
-            /\ IF fastQuorums # {} THEN
-                    LET Q == CHOOSE Q \in fastQuorums : TRUE
-                    IN
-                    LET Dfinal == UNION { m.body.Dq : m \in Q }
+            /\ IF \E fastQuorum \in fastQuorums : IsFastQuorumSized(fastQuorum) THEN
+                    LET Dfinal == UNION { m.body.Dq : m \in fastQuorum }
                     IN
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc }
                     /\ selfAddressedMessageFlag' = TRUE
@@ -342,7 +339,6 @@ HandleCommit(m) ==
 (* 43–45 StartRecover                                                      *)
 (***************************************************************************)
 StartRecover(p, id) ==
-    /\ phase[p][id] # InitialPhase
     /\ phase[p][id] # CommittedPhase
     \* We count the number of times a process has tried to recover a command to avoid model checker exploding
     /\ recovered[p][id] < NumberOfRecoveryAttempts
