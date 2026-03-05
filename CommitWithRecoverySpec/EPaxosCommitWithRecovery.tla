@@ -237,7 +237,7 @@ Submit(p, id, c) ==
           /\ submitted' = submitted \cup {id}
           /\ initCoord' = [initCoord EXCEPT ![id] = p]
           /\ ApplyPreAccept(p, p, id, c, D0) \* Apply the self sent message immediately, and then send the preAcceptOk response as well.
-          /\ msgs' = msgs \cup { PreAcceptMsg(p, q, id, c, D0) : q \in Proc } \cup {PreAcceptOKMsg(p, p, id, D0)}
+          /\ msgs' = msgs \cup { PreAcceptMsg(p, q, id, c, D0) : q \in Proc \ {p}} \cup {PreAcceptOKMsg(p, p, id, D0)}
           /\ UNCHANGED <<  bal, abal, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >> 
 
 (***************************************************************************)
@@ -272,13 +272,13 @@ HandlePreAcceptOK(p, id) ==
             IN
             IF IsFastQuorumSized(largestFastQuorum) THEN
                     /\ ApplyCommit(p, p, 0, id, cmd[p][id], initDep[p][id]) \* Apply Commit, no response message to add
-                    /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q, 0, id, cmd[p][id], initDep[p][id]) : q \in Proc }
+                    /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q, 0, id, cmd[p][id], initDep[p][id]) : q \in Proc \ {p} }
                     /\ UNCHANGED bal
             ELSE        
                 /\  LET Dfinal == UNION { m.body.Dq : m \in quorumOfMessages }
                     IN
                     /\ ApplyAccept(p, p, 0, id, cmd[p][id], Dfinal) \* Apply accpet, and add the response message that the self sent Accept message would have produced
-                    /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc } \cup { AcceptOKMsg(p, p, 0, id) }
+                    /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc \ {p} } \cup { AcceptOKMsg(p, p, 0, id) }
     /\ UNCHANGED <<  initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
 
 (***************************************************************************)
@@ -331,7 +331,7 @@ StartRecover(p, id) ==
     \* Ballots owned by p are of the form k*N + p.
     /\ LET  b == IF bal[p][id] = 0 THEN p ELSE bal[p][id] + Cardinality(Proc)
        IN
-        /\ msgs' = msgs \cup { RecoverMsg(p,q,b,id) : q \in Proc } \cup {RecoverOKMsg(p,p,b,id,abal[p][id],cmd[p][id],dep[p][id],initDep[p][id],phase[p][id])}
+        /\ msgs' = msgs \cup { RecoverMsg(p,q,b,id) : q \in Proc \ {p} } \cup {RecoverOKMsg(p,p,b,id,abal[p][id],cmd[p][id],dep[p][id],initDep[p][id],phase[p][id])}
         /\ ApplyRecover(p, p, b, id)
         /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase,
                             submitted, initCoord, Qvar, CardinalityRmax, Ivar, recoveryAttemptBal >>
@@ -375,7 +375,7 @@ HandleRecoverOK(p, id) ==
                         /\  LET n == CHOOSE n \in U :
                                         n.body.phaseq = CommittedPhase
                             IN
-                            /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q2, bal[p][id], id, n.body.cq, n.body.depq) : q2 \in Proc }
+                            /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q2, bal[p][id], id, n.body.cq, n.body.depq) : q2 \in Proc  \ {p}}
                             /\ ApplyCommit(p, p, bal[p][id], id, n.body.cq, n.body.depq)
                             /\ UNCHANGED <<Qvar, CardinalityRmax, recoveryAttemptBal, bal, initCmd, initDep>>
 
