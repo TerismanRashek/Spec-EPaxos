@@ -154,8 +154,7 @@ Init ==
 Conflicts(c1, c2) ==
     IF c1 = Bottom \/ c2 = Bottom THEN FALSE
     ELSE IF c1 = Nop \/ c2 = Nop THEN TRUE
-    ELSE IF c1 = 3 \/ c2 = 3 THEN TRUE
-    ELSE FALSE
+    ELSE c1 # c2
 
 IsQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - F
 IsFastQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - E
