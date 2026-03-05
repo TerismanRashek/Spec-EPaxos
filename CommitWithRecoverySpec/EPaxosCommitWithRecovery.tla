@@ -116,11 +116,11 @@ VARIABLES
     initCoord,     \* initCoord[id] = process that submitted id
     recovered,     \* counter of times recoverd per (p,id)
     \* These variables are used to persist to local state in the RecoverOK part, which is split in 3 in my TLA spec.
-    Ivar,             \* I[p]][id] used to keep track of I set in validateOK handler, which we need in PostWaiting handler.
-    Qvar,             \* Q[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
+    Ivar,               \* I[p]][id] used to keep track of I set in validateOK handler, which we need in PostWaiting handler.
+    Qvar,               \* Q[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
     recoveryAttemptBal, \* bal of the current recovery attempt for [p][id]
-    CardinalityRmax,\* they only appear because I have the split the pseudocode of RecoverOK in 3 handlers and these local variables are lost from one handler to the other.    
-    postWaitingFlag
+    CardinalityRmax,    \* they only appear because I have the split the pseudocode of RecoverOK in 3 handlers and these local variables are lost from one handler to the other.    
+    postWaitingFlag     
 
 
 vars ==
@@ -168,13 +168,12 @@ ConflictingIds(p, c) ==
     }
 
 (***************************************************************************)
-(* Actions                                                                 *)
+(* State Changing Actions                                                  *)
 (***************************************************************************)
 
 (***************************************************************************)
-(* 8–10 Submit                                                             *)
+(* 12–17 When received PreAccept                                           *)
 (***************************************************************************)
-
 ApplyPreAccept(p, q, id, c, D) ==
     /\  bal[p][id] = 0
     /\  phase[p][id] = InitialPhase
@@ -186,6 +185,9 @@ ApplyPreAccept(p, q, id, c, D) ==
             IN dep' = [dep EXCEPT ![p][id] = Dfinal]
     /\ phase' = [phase EXCEPT ![p][id] = PreAcceptedPhase]
 
+(***************************************************************************)
+(* 27–32 When received Accept                                              *)
+(***************************************************************************)
 ApplyAccept(p, q, b, id, c, D) ==
     /\ bal[p][id] <= b
     /\ (bal[p][id] = b => phase[p][id] # CommittedPhase)
@@ -195,16 +197,25 @@ ApplyAccept(p, q, b, id, c, D) ==
     /\ dep'  = [dep  EXCEPT ![p][id] = D]
     /\ phase' = [phase EXCEPT ![p][id] = AcceptedPhase]
 
+(***************************************************************************)
+(* 47–48 When received recover                                             *)
+(***************************************************************************)
 ApplyRecover(p, q, b, id) ==
     /\ bal[p][id] < b
     /\ bal' = [bal EXCEPT ![p][id] = b]
 
+(***************************************************************************)
+(* 82–85 When received Validate                                            *)
+(***************************************************************************)
 ApplyValidate(p,q,b,id,c,D) == 
         /\ bal[p][id] = b
         /\ cmd' = [cmd EXCEPT ![p][id] = c]
         /\ initCmd' = [initCmd EXCEPT ![p][id] = c]
         /\ initDep' = [initDep EXCEPT ![p][id] = D]
 
+(***************************************************************************)
+(* 38–42 When received Commit                                              *)
+(***************************************************************************)
 ApplyCommit(p, q, b, id, c, D) ==
     /\ bal[p][id] = b
     /\ abal' = [abal EXCEPT ![p][id] = b]
@@ -212,14 +223,20 @@ ApplyCommit(p, q, b, id, c, D) ==
     /\ dep' = [dep EXCEPT ![p][id] = D]
     /\ phase' = [phase EXCEPT ![p][id] = CommittedPhase]
 
+(***************************************************************************)
+(* Message Handling Actions                                                *)
+(***************************************************************************)
+(***************************************************************************)
+(* 8–10 Submit                                                   *)
+(***************************************************************************)
 Submit(p, id, c) ==
     /\ id \notin submitted
-    /\ id = c \*for ids and commands to match when I test, I should problably change this to be id and command pairs in config.
+    /\ id = c \*for ids and commands to match when I test, this isn't great, could just use the Id as command payload realistically here
     /\ LET D0 == ConflictingIds(p, c)
        IN
           /\ submitted' = submitted \cup {id}
           /\ initCoord' = [initCoord EXCEPT ![id] = p]
-          /\ ApplyPreAccept(p, p, id, c, D0)
+          /\ ApplyPreAccept(p, p, id, c, D0) \* Apply the self sent message immediately, and then send the preAcceptOk response as well.
           /\ msgs' = msgs \cup { PreAcceptMsg(p, q, id, c, D0) : q \in Proc } \cup {PreAcceptOKMsg(p, p, id, D0)}
           /\ UNCHANGED <<  bal, abal, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >> 
 
@@ -236,9 +253,8 @@ HandlePreAccept(m) ==
     /\ UNCHANGED << abal, submitted, bal, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
 
 (***************************************************************************)
-(* 19–33 HandlePreAcceptOk and HandleAccept                                                *)
+(* 19–25 HandlePreAcceptOk                                                 *)
 (***************************************************************************)
-
 
 HandlePreAcceptOK(p, id) ==
     /\ bal[p][id] = 0
@@ -255,16 +271,19 @@ HandlePreAcceptOK(p, id) ==
                 { m \in quorumOfMessages : m.body.Dq = initDep[p][id]  }
             IN
             IF IsFastQuorumSized(largestFastQuorum) THEN
-                    /\ ApplyCommit(p, p, 0, id, cmd[p][id], initDep[p][id])
+                    /\ ApplyCommit(p, p, 0, id, cmd[p][id], initDep[p][id]) \* Apply Commit, no response message to add
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q, 0, id, cmd[p][id], initDep[p][id]) : q \in Proc }
                     /\ UNCHANGED bal
             ELSE        
                 /\  LET Dfinal == UNION { m.body.Dq : m \in quorumOfMessages }
                     IN
-                    /\ ApplyAccept(p, p, 0, id, cmd[p][id], Dfinal)
+                    /\ ApplyAccept(p, p, 0, id, cmd[p][id], Dfinal) \* Apply accpet, and add the response message that the self sent Accept message would have produced
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc } \cup { AcceptOKMsg(p, p, 0, id) }
     /\ UNCHANGED <<  initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
 
+(***************************************************************************)
+(* 26–33 HandleAccept                                                      *)
+(***************************************************************************)                    
 HandleAccept(m) ==
     /\ m.type = TypeAccept
     /\ ApplyAccept(m.to, m.from, m.body.b, m.body.id, m.body.c, m.body.D)
@@ -273,11 +292,8 @@ HandleAccept(m) ==
                       submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
 
 (***************************************************************************)
-(* 34–42 HandleAcceptOk and HandleCommit                                                   *)
+(* 34–36 HandleAcceptOk                                                    *)
 (***************************************************************************)
-
-
-
 HandleAcceptOK(p, id) ==
     /\ phase[p][id] = AcceptedPhase
     /\ LET quorumOfMessages == { k \in msgs :
@@ -292,7 +308,9 @@ HandleAcceptOK(p, id) ==
     /\ UNCHANGED << bal, initCmd,
                 initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
 
-
+(***************************************************************************)
+(* 37–42 HandleCommit                                                      *)
+(***************************************************************************)
 HandleCommit(m) ==
     /\ m.type = TypeCommit
     /\ ApplyCommit(m.to, m.from, m.body.b, m.body.id, m.body.c, m.body.D)
@@ -486,7 +504,7 @@ HandleValidateOK(p, id) ==
 (***************************************************************************)
                     
 HandlePostWaiting(p, id) ==
-    /\  recoveryAttemptBal[p][id] = bal[p][id] \* I'm not getting the ballot from messages here so I use this extra variable to check ballot.
+    /\  recoveryAttemptBal[p][id] = bal[p][id] \* I'm not getting the ballot of corresponding recovery attempt from messages here so I use this extra variable to check ballot.
     /\  postWaitingFlag[p][id] = TRUE
     /\  LET 
            I == Ivar[p][id]
