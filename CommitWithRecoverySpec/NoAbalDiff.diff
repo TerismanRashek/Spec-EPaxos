@@ -1,0 +1,62 @@
+diff --git a/CommitWithRecoverySpec/EPaxosCommitWithRecovery.tla b/CommitWithRecoverySpec/EPaxosCommitWithRecovery.tla
+index 67d16de..53debfc 100644
+--- a/CommitWithRecoverySpec/EPaxosCommitWithRecovery.tla
++++ b/CommitWithRecoverySpec/EPaxosCommitWithRecovery.tla
+@@ -110,7 +110,6 @@ VARIABLES
+     initCmd,       \* initCmd[p][id] = payload received in PreAccept
+     initDep,       \* initDep[p][id] = dependencies sent by initial coordinator
+     dep,           \* dep[p][id] =  dependency set at p for command id
+-    abal,          \* abal[p][id] = last ballot where p accepted a slow-path value
+     msgs,          \* multiset of network messages
+     submitted,     \* set of submitted ids
+     initCoord,     \* initCoord[id] = process that submitted id
+@@ -124,7 +123,7 @@ VARIABLES
+ 
+ vars ==
+-    << bal, abal, cmd, initCmd, dep, initDep, phase, msgs,
++    << bal,  cmd, initCmd, dep, initDep, phase, msgs,
+        submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
+ 
+ (***************************************************************************)
+@@ -133,7 +132,6 @@ vars ==
+ 
+ Init ==
+     /\ bal = [p \in Proc |-> [id \in Id |-> 0]]
+-    /\ abal = [p \in Proc |-> [id \in Id |-> 0]]
+     /\ cmd = [p \in Proc |-> [id \in Id |-> Bottom]]
+     /\ initCmd = [p \in Proc |-> [id \in Id |-> Bottom]]
+     /\ dep = [p \in Proc |-> [id \in Id |-> {}]]
+@@ -156,8 +154,7 @@ Init ==
+ Conflicts(c1, c2) ==
+     IF c1 = Bottom \/ c2 = Bottom THEN FALSE
+     ELSE IF c1 = Nop \/ c2 = Nop THEN TRUE
+-    ELSE IF c1 = 3 \/ c2 = 3 THEN TRUE
+-    ELSE FALSE
++    ELSE c1 # c2
+
+@@ -192,7 +189,6 @@ ApplyAccept(p, q, b, id, c, D) ==
+     /\ bal[p][id] <= b
+     /\ (bal[p][id] = b => phase[p][id] # CommittedPhase)
+     /\ bal'  = [bal  EXCEPT ![p][id] = b]
+-    /\ abal' = [abal EXCEPT ![p][id] = b]
+     /\ cmd'  = [cmd  EXCEPT ![p][id] = c]
+     /\ dep'  = [dep  EXCEPT ![p][id] = D]
+     /\ phase' = [phase EXCEPT ![p][id] = AcceptedPhase]
+
+ ApplyCommit(p, q, b, id, c, D) ==
+     /\ bal[p][id] = b
+-    /\ abal' = [abal EXCEPT ![p][id] = b]
+     /\ cmd' = [cmd EXCEPT ![p][id] = c]
+     /\ dep' = [dep EXCEPT ![p][id] = D]
+     /\ phase' = [phase EXCEPT ![p][id] = CommittedPhase]
+
+@@ -347,8 +342,8 @@ HandleRecover(m) ==
+            b == m.body.b
+        IN
+        /\ ApplyRecover(p, q, b, id)
+-       /\ msgs' = (msgs \ {m}) \cup { RecoverOKMsg(p,q,b,id,abal[p][id],cmd[p][id],dep[p][id],initDep[p][id],phase[p][id]) }
+-       /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase,
++       /\ msgs' = (msgs \ {m}) \cup { RecoverOKMsg(p,q,b,id,bal[p][id],cmd[p][id],dep[p][id],initDep[p][id],phase[p][id]) }
++       /\ UNCHANGED <<  cmd, initCmd, dep, initDep, phase,
+                         submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
+ 

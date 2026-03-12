@@ -394,7 +394,7 @@ HandleRecoverOK(p, id) ==
                                                 /\ n.body.phaseq = PreAcceptedPhase
                                                 /\ n.body.depq = n.body.initDepq }
                                 IN
-                                /\  Cardinality(Rmax) >= QuorumSize - E)
+                                /\  Cardinality(Rmax) >= Cardinality(quorumOfMessages) - E)
                         THEN
                         LET Rmax == { n \in quorumOfMessages :
                                                 /\ n.body.phaseq = PreAcceptedPhase
@@ -505,7 +505,7 @@ HandlePostWaiting(p, id) ==
            I == Ivar[p][id]
            Q == Qvar[p][id]
            b == bal[p][id] 
-        IN  /\ b = bal[p][id]
+           IN
             /\  \/ (\E x \in I :
                         x[1] # id /\
                         x[2] = CommittedPhase /\
