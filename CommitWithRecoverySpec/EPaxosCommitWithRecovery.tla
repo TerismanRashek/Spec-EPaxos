@@ -13,45 +13,29 @@ CONSTANTS
     NoProc,          \* special value representing no process
     NumberOfRecoveryAttempts \* maximum number of recovery attempts per process and command to avoid state space explosion
 
-ASSUME E <= F
-
 N == Cardinality(Proc)
 QuorumSize == N - F
 
-ASSUME QuorumSize > N \div 2
+Max(a, b) == IF a > b THEN a ELSE b
+ASSUME N >= Max(2*E+F-1, 2*F+1)
 
-\*Phases
-(* Initial = 1
-   PreAccepted = 2
-   Accepted = 3
-   Committed = 4 *)
-CONSTANTS 
-    InitialPhase, PreAcceptedPhase, AcceptedPhase, CommittedPhase
-
-\* Message types
-(* 1 = PreAccept
-2 = PreAcceptOK
-3 = Accept
-4 = AcceptOK
-5 = Commit
-6 = Recover
-7 = RecoverOK
-8 = Validate
-9 = ValidateOK
-10 = Waiting
-11 = PostWaiting *)
-CONSTANTS 
-TypePreAccept,
-TypePreAcceptOK,
-TypeAccept,     
-TypeAcceptOK,    
-TypeCommit,        
-TypeRecover,      
-TypeRecoverOK,  
-TypeValidate,     
-TypeValidateOK,    
-TypeWaiting,      
-TypePostWaiting 
+\* Message types and phase constants
+TypePreAccept == 1
+TypePreAcceptOK == 2
+TypeAccept == 3
+TypeAcceptOK == 4
+TypeCommit == 5
+TypeRecover == 6
+TypeRecoverOK == 7
+TypeValidate == 8
+TypeValidateOK == 9
+TypeWaiting == 10
+TypePostWaiting == 11
+\*Phase constants
+InitialPhase == 1
+PreAcceptedPhase == 2
+AcceptedPhase == 3
+CommittedPhase == 4 
 
 Message(type, from, to, body) ==
     [ type |-> type, from |-> from, to |-> to, body |-> body ]
@@ -105,7 +89,7 @@ WaitingMsg(p, q, id, k) ==
 
 VARIABLES
     bal,           \* bal[p][id] = current ballot known by process p for command id
-    phase,         \* phase[p][id] ∈ {"none","preaccepted","accepted","committed"}
+    phase,         \* phase[p][id] ∈ {InitialPhase,PreAcceptedPhase,AcceptedPhase,CommittedPhase}
     cmd,           \* cmd[p][id] = command payload at p
     initCmd,       \* initCmd[p][id] = payload received in PreAccept
     initDep,       \* initDep[p][id] = dependencies sent by initial coordinator
@@ -116,16 +100,15 @@ VARIABLES
     initCoord,     \* initCoord[id] = process that submitted id
     recovered,     \* counter of times recoverd per (p, id)
     \* These variables are used to persist to local state in the RecoverOK part, which is split in 3 in my TLA spec.
-    Ivar,               \* I[p]][id] used to keep track of I set in validateOK handler, which we need in PostWaiting handler.
-    Qvar,               \* Q[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
+    Ivar,               \* Ivar[p]][id] used to keep track of I set in validateOK handler, which we need in PostWaiting handler.
+    Qvar,               \* Qvar[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
     recoveryAttemptBal, \* bal of the current recovery attempt for [p][id]
     CardinalityRmax,    \* they only appear because I have the split the pseudocode of RecoverOK in 3 handlers and these local variables are lost from one handler to the other.    
     postWaitingFlag     
 
 
 vars ==
-    << bal, abal, cmd, initCmd, dep, initDep, phase, msgs,
-       submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
+    << bal, abal, cmd, initCmd, dep, initDep, phase, msgs, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
 
 (***************************************************************************)
 (* Initialisation                                                            *)
@@ -162,7 +145,7 @@ ConflictPairs == {
 Conflicts(c1, c2) ==
     IF c1 = Bottom \/ c2 = Bottom THEN FALSE
     ELSE IF c1 = Nop \/ c2 = Nop THEN TRUE
-    ELSE <<c1, c2>> \in ConflictPairs \/ <<c1, c2>> \in ConflictPairs
+    ELSE <<c1, c2>> \in ConflictPairs \/ <<c2, c1>> \in ConflictPairs
 
 IsQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - F
 IsFastQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - E
@@ -209,15 +192,6 @@ ApplyRecover(p, q, b, id) ==
     /\ bal' = [bal EXCEPT ![p][id] = b]
 
 (***************************************************************************)
-(* 82–85 When received Validate                                            *)
-(***************************************************************************)
-ApplyValidate(p, q, b, id, c, D) == 
-        /\ bal[p][id] = b
-        /\ cmd'     = [cmd      EXCEPT ![p][id] = c]
-        /\ initCmd' = [initCmd  EXCEPT ![p][id] = c]
-        /\ initDep' = [initDep  EXCEPT ![p][id] = D]
-
-(***************************************************************************)
 (* 38–42 When received Commit                                              *)
 (***************************************************************************)
 ApplyCommit(p, q, b, id, c, D) ==
@@ -226,6 +200,25 @@ ApplyCommit(p, q, b, id, c, D) ==
     /\ cmd'     = [cmd      EXCEPT ![p][id] = c]
     /\ dep'     = [dep      EXCEPT ![p][id] = D]
     /\ phase'   = [phase    EXCEPT ![p][id] = CommittedPhase]
+
+(***************************************************************************)
+(* 82–85 When received Validate                                            *)
+(***************************************************************************)
+ApplyValidate(p, q, b, id, c, D) == 
+        /\ bal[p][id] = b
+        /\ cmd'     = [cmd      EXCEPT ![p][id] = c]
+        /\ initCmd' = [initCmd  EXCEPT ![p][id] = c]
+        /\ initDep' = [initDep  EXCEPT ![p][id] = D]
+
+ComputeI(p, id, c, D) ==  {<<id2, phase[p][id2]>> : id2 \in 
+                        { id3 \in Id :
+                            /\ id3 # id 
+                            /\ id3 \notin D 
+                            /\ (phase[p][id3] = CommittedPhase => (cmd[p][id3] # Nop /\ id \notin dep[p][id3] /\ Conflicts(c, cmd[p][id3]) ))
+                            /\ (phase[p][id3] # CommittedPhase => (initCmd[p][id3] # Bottom /\ id \notin initDep[p][id3] /\ Conflicts(c, initCmd[p][id3])))
+                        }
+                        }
+
 
 (***************************************************************************)
 (* Message Handling Actions                                                *)
@@ -303,7 +296,7 @@ HandleAcceptOK(p, id) ==
     /\  LET quorumOfMessages == { k \in msgs :
         /\  k.type = TypeAcceptOK
         /\  k.to = p
-        /\  k.body.b = bal[p][id] \*Ballot precondition is here
+        /\  k.body.b = bal[p][id]
         /\  k.body.id = id }   
         IN
         /\  IsQuorumSized(quorumOfMessages)
@@ -362,7 +355,7 @@ HandleRecoverOK(p, id) ==
             /\ k.type = TypeRecoverOK
             /\ k.to = p 
             /\ k.body.id = id 
-            /\ k.body.b = bal[p][id]  } \* ballot precondition is here
+            /\ k.body.b = bal[p][id]  }
         IN
         /\  IsQuorumSized(quorumOfMessages) 
         /\  LET Q == { k.from : k \in quorumOfMessages}
@@ -413,14 +406,7 @@ HandleRecoverOK(p, id) ==
                             /\  Qvar' = [Qvar EXCEPT ![p][id] = Q]
                             /\  recoveryAttemptBal' = [recoveryAttemptBal EXCEPT ![p][id] = bal[p][id]]
                             /\  CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
-                            /\  LET I == { <<id2, phase[p][id2]>> : id2 \in 
-                                            { id3 \in Id :
-                                                /\ id3 # id 
-                                                /\ id3 \notin D 
-                                                /\ (phase[p][id3] = CommittedPhase => (cmd[p][id3] # Nop /\ id \notin dep[p][id3] /\ Conflicts(c, cmd[p][id3])))
-                                                /\ (phase[p][id3] # CommittedPhase => (initCmd[p][id3] # Bottom /\ id \notin initDep[p][id3] /\ Conflicts(c, initCmd[p][id3])))
-                                            }
-                                         }
+                            /\  LET I == ComputeI(p, id, c, D)
                                 IN
                                 /\ ApplyValidate(p, p, bal[p][id], id, c, D)
                                 /\ msgs' = (msgs \ quorumOfMessages) \cup {ValidateMsg(p, q, bal[p][id], id, c, D) : q \in Q \ {p}} 
@@ -439,21 +425,14 @@ HandleRecoverOK(p, id) ==
 (***************************************************************************)
 HandleValidate(m) ==
     /\ m.type = TypeValidate
-    /\ LET p == m.to
-           q == m.from
-           id == m.body.id
-           c == m.body.c
-           D == m.body.D
-           b == m.body.b
-       IN
-       LET I == {<<id2, phase[p][id2]>> : id2 \in 
-                        { id3 \in Id :
-                            /\ id3 # id 
-                            /\ id3 \notin D 
-                            /\ (phase[p][id3] = CommittedPhase => (cmd[p][id3] # Nop /\ id \notin dep[p][id3] /\ Conflicts(c, cmd[p][id3]) ))
-                            /\ (phase[p][id3] # CommittedPhase => (initCmd[p][id3] # Bottom /\ id \notin initDep[p][id3] /\ Conflicts(c, initCmd[p][id3])))
-                        }
-                }
+    /\  LET p == m.to
+            q == m.from
+            id == m.body.id
+            c == m.body.c
+            D == m.body.D
+            b == m.body.b
+        IN
+        LET I == ComputeI(p, id, c, D)
         IN
         /\ ApplyValidate(p, q, b, id, c, D)
         /\ msgs' = (msgs \ {m}) \cup { ValidateOKMsg(p, q, b, id, c, D, I)}
@@ -465,7 +444,7 @@ HandleValidate(m) ==
 HandleValidateOK(p, id) ==
     /\  LET Q == Qvar[p][id]
         IN 
-        /\ IsQuorumSized(Q)
+        /\  Q # {}
         /\  LET quorumOfMessages ==
                 { m \in msgs :
                     /\ m.type = TypeValidateOK 
@@ -515,7 +494,6 @@ HandlePostWaiting(p, id) ==
            Q == Qvar[p][id]
            b == bal[p][id] 
         IN      \/ (\E x \in I :
-                        x[1] # id /\
                         x[2] = CommittedPhase /\
                         cmd[p][x[1]] # Nop /\
                         id \notin dep[p][x[1]]
@@ -525,16 +503,13 @@ HandlePostWaiting(p, id) ==
                     /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE])    
 
                 \/ (\A x \in I :
-                        x[1] # id =>
-                        (x[2] = CommittedPhase /\
-                            (cmd[p][x[1]] = Nop \/ id \in dep[p][x[1]]))
+                    /\ x[2] = CommittedPhase /\ (cmd[p][x[1]] = Nop \/ id \in dep[p][x[1]])
                     /\ ApplyAccept(p, p, bal[p][id], id, cmd[p][id], dep[p][id])
                     /\ msgs' =  msgs \cup { AcceptMsg(p, q, bal[p][id], id, cmd[p][id], dep[p][id]) : q  \in Proc \ {p}} 
                                      \cup { AcceptOKMsg(p, p, bal[p][id], id)}
                     /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE])
 
                 \/ (\E x \in I :
-                        x[1] # id /\
                         \E m2 \in msgs :
                             m2.type = TypeWaiting /\
                             m2.to = p /\
@@ -631,10 +606,8 @@ Next ==     \/ \E m \in msgs :
                 \/ HandleRecover(m) 
                 \/ HandleValidate(m) 
 
-            \/ \E q \in Proc, id \in Id :
-                Submit(q, id, id) \*use id as the payload
-
             \/ \E p \in Proc, id \in Id :
+                \/ Submit(p, id, id) \*use id as the payload
                 \/ StartRecover(p, id) 
                 \/ HandlePreAcceptOK(p, id) 
                 \/ HandleValidateOK(p, id) 

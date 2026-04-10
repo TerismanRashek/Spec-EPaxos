@@ -1,0 +1,3312 @@
+TLC2 Version 2.19 of 08 August 2024 (rev: 5a47802)
+Warning: Please run the Java VM which executes TLC with a throughput optimized garbage collector by passing the "-XX:+UseParallelGC" property.
+(Use the -nowarning option to disable this warning.)
+Running Random Simulation with seed -1076583811120769184 with 10 workers on 14 cores with 3870MB heap and 64MB offheap memory [pid: 759537] (Linux 6.17.0-1012-oem amd64, Ubuntu 21.0.10 x86_64).
+Parsing file /home/alexandre.siret/TLAworkspace/Spec-EPaxos/CommitWithRecoverySpec/EPaxosCommitWithRecovery.tla
+Parsing file /tmp/Naturals.tla
+Parsing file /tmp/FiniteSets.tla
+Parsing file /tmp/Sequences.tla
+Parsing file /tmp/TLC.tla
+Semantic processing of module Naturals
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module TLC
+Semantic processing of module EPaxosCommitWithRecovery
+Starting... (2026-04-10 14:40:36)
+Computed 1 initial states...
+Error: Successor state is not completely specified by the next-state action.
+
+Error: The behavior up to this point is:
+State 1: <Initial predicate>
+/\ phase = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {}
+/\ cmd = << <<bottom, bottom, bottom>>,
+   <<bottom, bottom, bottom>>,
+   <<bottom, bottom, bottom>> >>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = {}
+/\ initCmd = << <<bottom, bottom, bottom>>,
+   <<bottom, bottom, bottom>>,
+   <<bottom, bottom, bottom>> >>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<0, 0, 0>>
+
+State 2: <Submit line 230, col 5 to line 238, col 108 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {3}
+/\ cmd = << <<bottom, bottom, bottom>>,
+   <<bottom, bottom, bottom>>,
+   <<bottom, bottom, 3>> >>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 2, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]] }
+/\ initCmd = << <<bottom, bottom, bottom>>,
+   <<bottom, bottom, bottom>>,
+   <<bottom, bottom, 3>> >>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<0, 0, 3>>
+
+State 3: <Submit line 230, col 5 to line 238, col 108 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<1, 2, 1>>, <<1, 1, 1>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {2, 3}
+/\ cmd = <<<<bottom, 2, bottom>>, <<bottom, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 2, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]] }
+/\ initCmd = <<<<bottom, 2, bottom>>, <<bottom, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<0, 1, 3>>
+
+State 4: <Submit line 230, col 5 to line 238, col 108 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<1, 2, 1>>, <<2, 1, 1>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<bottom, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 1, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 2, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]] }
+/\ initCmd = <<<<bottom, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 5: <StartRecover line 321, col 5 to line 332, col 131 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<1, 2, 1>>, <<2, 1, 1>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 0, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<bottom, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 1, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 2, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<bottom, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 0, 0>>, <<0, 1, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 6: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<1, 2, 1>>, <<2, 1, 1>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 2, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<bottom, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 1, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 2, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<bottom, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 0, 0>>, <<0, 1, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 7: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 1, 1>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 2, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 2, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 0, 0>>, <<0, 1, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 8: <StartRecover line 321, col 5 to line 332, col 131 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 1, 1>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 2, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, bottom>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 1, 0>>, <<0, 1, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 9: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 1, 2>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 3, body |-> [id |-> 3, Dq |-> {1}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 1, 0>>, <<0, 1, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 10: <HandleRecoverOK line 353, col 5 to line 421, col 76 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 3, 2>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 3, body |-> [id |-> 3, Dq |-> {1}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 1, 0>>, <<0, 1, 0>>, <<0, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 11: <StartRecover line 321, col 5 to line 332, col 131 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 3, 2>>, <<1, 1, 2>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<3, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 3, body |-> [id |-> 3, Dq |-> {1}]],
+  [type |-> 2, from |-> 3, to |-> 3, body |-> [id |-> 3, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 1, 0>>, <<0, 1, 0>>, <<1, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 12: <HandlePreAcceptOK line 257, col 5 to line 280, col 136 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<3, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 1, 0>>, <<0, 1, 0>>, <<1, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 13: <StartRecover line 321, col 5 to line 332, col 131 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 5, 0>>, <<2, 2, 0>>, <<3, 0, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 1, 0>>, <<1, 1, 0>>, <<1, 0, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 14: <StartRecover line 321, col 5 to line 332, col 131 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 5, 0>>, <<2, 2, 0>>, <<3, 3, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 1, 0>>, <<1, 1, 0>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 15: <StartRecover line 321, col 5 to line 332, col 131 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<0, 5, 1>>, <<2, 2, 0>>, <<3, 3, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<0, 1, 1>>, <<1, 1, 0>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 16: <StartRecover line 321, col 5 to line 332, col 131 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<1, 5, 1>>, <<2, 2, 0>>, <<3, 3, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 0>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 17: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 2, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 0, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<1, 5, 1>>, <<2, 2, 0>>, <<3, 5, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 2, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> 2,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 0>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 18: <HandleRecoverOK line 353, col 5 to line 421, col 76 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<1, 5, 1>>, <<2, 2, 0>>, <<3, 5, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 0>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 19: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<3, 5, 1>>, <<2, 2, 0>>, <<3, 5, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<bottom, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<bottom, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<0, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 0>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 20: <HandleRecoverOK line 353, col 5 to line 421, col 76 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<3, 5, 1>>, <<2, 2, 0>>, <<3, 5, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 1]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 0>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 21: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<3, 5, 1>>, <<3, 2, 0>>, <<3, 5, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 0>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 22: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<3, 5, 1>>, <<3, 5, 0>>, <<3, 5, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 0>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 23: <StartRecover line 321, col 5 to line 332, col 131 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<3, 5, 1>>, <<3, 5, 2>>, <<3, 5, 0>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 0>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 24: <StartRecover line 321, col 5 to line 332, col 131 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<3, 5, 1>>, <<3, 5, 2>>, <<3, 5, 3>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 3]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 25: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<3, 5, 1>>, <<3, 5, 3>>, <<3, 5, 3>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 26: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 0>>>>
+/\ bal = <<<<3, 5, 3>>, <<3, 5, 3>>, <<3, 5, 3>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 27: <HandleRecoverOK line 353, col 5 to line 421, col 76 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 2>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 0>>, <<0, 0, 3>>>>
+/\ bal = <<<<3, 5, 3>>, <<3, 5, 3>>, <<3, 5, 3>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 3, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 28: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 3>>, <<1, 1, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 3>>, <<0, 0, 3>>>>
+/\ bal = <<<<3, 5, 3>>, <<3, 5, 3>>, <<3, 5, 3>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, bottom, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 3, body |-> [b |-> 3, id |-> 3]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 3, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 29: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 3, 1>>, <<2, 3, 3>>, <<1, 3, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 3>>, <<0, 5, 3>>>>
+/\ bal = <<<<3, 5, 3>>, <<3, 5, 3>>, <<3, 5, 3>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, 0, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 1, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 3, body |-> [b |-> 3, id |-> 3]],
+  [type |-> 4, from |-> 3, to |-> 1, body |-> [b |-> 5, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 3, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 30: <HandleAcceptOK line 295, col 5 to line 305, col 141 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 4, 1>>, <<2, 3, 3>>, <<1, 3, 3>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 3>>, <<0, 5, 3>>>>
+/\ bal = <<<<3, 5, 3>>, <<3, 5, 3>>, <<3, 5, 3>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, 0, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 2, to |-> 3, body |-> [b |-> 3, id |-> 3]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 3, id |-> 3]],
+  [ type |-> 5,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 5,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 31: <HandleAcceptOK line 295, col 5 to line 305, col 141 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 4, 1>>, <<2, 3, 3>>, <<1, 3, 4>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 3>>, <<0, 5, 3>>>>
+/\ bal = <<<<3, 5, 3>>, <<3, 5, 3>>, <<3, 5, 3>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, 0, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [ type |-> 5,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 5,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 5,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 5,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 8,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ initCoord = <<2, 1, 3>>
+
+State 32: <Next line 601, col 16 to line 606, col 36 of module EPaxosCommitWithRecovery>
+/\ phase = <<<<2, 4, 1>>, <<2, 3, 3>>, <<1, 3, 4>>>>
+/\ abal = <<<<0, 5, 0>>, <<0, 2, 3>>, <<0, 5, 3>>>>
+/\ bal = <<<<3, 5, 3>>, <<3, 5, 3>>, <<3, 5, 3>>>>
+/\ postWaitingFlag = <<<<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>, <<FALSE, FALSE, FALSE>>>>
+/\ dep = <<<<{}, {}, {}>>, <<{}, {}, {1}>>, <<{}, {}, {1}>>>>
+/\ recoveryAttemptBal = <<<<0, 0, 0>>, <<0, 0, 0>>, <<3, 0, 0>>>>
+/\ Ivar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ submitted = {1, 2, 3}
+/\ cmd = <<<<1, 0, bottom>>, <<1, 0, 3>>, <<1, 0, 3>>>>
+/\ initDep = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{}, {}, {}>>>>
+/\ msgs = { [type |-> 1, from |-> 1, to |-> 2, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 1, to |-> 3, body |-> [id |-> 2, c |-> 2, D |-> {}]],
+  [type |-> 1, from |-> 2, to |-> 3, body |-> [id |-> 1, c |-> 1, D |-> {}]],
+  [type |-> 1, from |-> 3, to |-> 1, body |-> [id |-> 3, c |-> 3, D |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 1, body |-> [id |-> 2, Dq |-> {}]],
+  [type |-> 2, from |-> 1, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [type |-> 2, from |-> 2, to |-> 2, body |-> [id |-> 1, Dq |-> {}]],
+  [ type |-> 3,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 1,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 2,
+    to |-> 3,
+    body |-> [b |-> 2, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 3,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 0, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 4, from |-> 2, to |-> 2, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 4, from |-> 3, to |-> 3, body |-> [b |-> 0, id |-> 3]],
+  [ type |-> 5,
+    from |-> 1,
+    to |-> 2,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 5,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 5, id |-> 2, c |-> 0, D |-> {}] ],
+  [ type |-> 5,
+    from |-> 3,
+    to |-> 1,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [ type |-> 5,
+    from |-> 3,
+    to |-> 2,
+    body |-> [b |-> 3, id |-> 3, c |-> 3, D |-> {1}] ],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 2, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 1]],
+  [type |-> 6, from |-> 1, to |-> 3, body |-> [b |-> 1, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 1, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 1]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 2]],
+  [type |-> 6, from |-> 2, to |-> 3, body |-> [b |-> 2, id |-> 3]],
+  [type |-> 6, from |-> 3, to |-> 1, body |-> [b |-> 3, id |-> 2]],
+  [type |-> 6, from |-> 3, to |-> 2, body |-> [b |-> 3, id |-> 2]],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 1,
+    to |-> 1,
+    body |->
+        [ b |-> 1,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 1,
+    body |->
+        [ b |-> 5,
+          id |-> 2,
+          abalq |-> 2,
+          cq |-> 0,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 3 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 2,
+    body |->
+        [ b |-> 2,
+          id |-> 3,
+          abalq |-> 0,
+          cq |-> 3,
+          depq |-> {1},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 2,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 1,
+          abalq |-> 0,
+          cq |-> 1,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 2 ] ],
+  [ type |-> 7,
+    from |-> 3,
+    to |-> 3,
+    body |->
+        [ b |-> 3,
+          id |-> 2,
+          abalq |-> 0,
+          cq |-> bottom,
+          depq |-> {},
+          initDepq |-> {},
+          phaseq |-> 1 ] ],
+  [ type |-> 9,
+    from |-> 1,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {}] ],
+  [ type |-> 9,
+    from |-> 3,
+    to |-> 3,
+    body |-> [b |-> 3, id |-> 1, c |-> 1, D |-> {}, Iq |-> {<<3, 3>>}] ] }
+/\ initCmd = <<<<1, 2, bottom>>, <<1, bottom, 3>>, <<1, bottom, 3>>>>
+/\ Qvar = <<<<{}, {}, {}>>, <<{}, {}, {}>>, <<{1, 3}, {}, {}>>>>
+/\ CardinalityRmax = <<<<0, 0, 0>>, <<0, 0, 0>>, <<1, 0, 0>>>>
+/\ recovered = <<<<1, 1, 1>>, <<1, 1, 1>>, <<1, 1, 1>>>>
+/\ initCoord = <<2, 1, 3>>
+
+Error: TLC threw an unexpected exception.
+This was probably caused by an error in the spec or model.
+See the User Output or TLC Console for clues to what happened.
+The exception was a java.lang.NullPointerException
+: Cannot invoke "tlc2.value.IValue.fingerPrint(long)" because "minVals[i]" is null
+Finished in 01s at (2026-04-10 14:40:37)
