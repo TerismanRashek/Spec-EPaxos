@@ -1,6 +1,11 @@
 ----------------------------- MODULE EPaxosCommitWithRecovery -----------------------------
 EXTENDS Naturals, FiniteSets, Sequences, TLC
 
+(* This file contains specification for the revised Egalitarian Paxos protocol detailed in the following paper :
+Making Democracy Work: Fixing and Simplifying Egalitarian Paxos.
+ 
+The Motivation behind this work is to provide formal specification of the protocol, as well as an extra layer of
+confidence on the correctness of the prtocol. The specification closely follows the pseudocode present in the article. *)
 
 CONSTANTS
     Proc,           \* set of processes
