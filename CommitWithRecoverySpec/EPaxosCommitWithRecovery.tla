@@ -58,50 +58,50 @@ Message(type, from, to, body) ==
 
 PreAcceptMsg(p, q, id, c, D) ==
     Message(TypePreAccept, p, q,
-        [ id  |-> id,
+        [ id |-> id,
           c |-> c,
           D |-> D ])
 
 PreAcceptOKMsg(p, q, id, Dq) ==
     Message(TypePreAcceptOK, p, q,
-        [ id  |-> id,
+        [ id |-> id,
           Dq |-> Dq ])
 
 AcceptMsg(p, q, b, id, c, D) ==
     Message(TypeAccept, p, q,
-        [ id   |-> id,
+        [ id |-> id,
           b  |-> b,
           c |-> c,
           D |-> D ])
 
 AcceptOKMsg(p, q, b, id) ==
     Message(TypeAcceptOK, p, q,
-        [ id  |-> id,
+        [ id |-> id,
           b |-> b ])
 
 CommitMsg(p, q, b, id, c, D) ==
     Message(TypeCommit, p, q,
-        [ id   |-> id,
+        [ id |-> id,
           b  |-> b,
           c |-> c,
           D |-> D ])
 
-RecoverMsg(p,q,b,id) ==
-    Message(TypeRecover,p,q,[ b |->b,id|->id])
+RecoverMsg(p, q, b, id) ==
+    Message(TypeRecover, p, q, [ b |-> b, id |-> id])
 
-RecoverOKMsg(p,q,b,id,abalq,cq,depq,initDepq,phaseq) ==
-    Message(TypeRecoverOK,p,q,
-        [ b|->b, id|->id, abalq|->abalq, cq|->cq,
-          depq|->depq, initDepq|->initDepq, phaseq|->phaseq ])
+RecoverOKMsg(p, q, b, id, abalq, cq, depq, initDepq, phaseq) ==
+    Message(TypeRecoverOK, p, q,
+        [ b |-> b, id |-> id, abalq |-> abalq, cq |-> cq,
+          depq |-> depq, initDepq |-> initDepq, phaseq |-> phaseq ])
 
-ValidateMsg(p,q,b,id,c,D) ==
-    Message(TypeValidate,p,q,[b|->b,id|->id,c|->c,D|->D])
+ValidateMsg(p, q, b, id, c, D) ==
+    Message(TypeValidate, p, q, [ b |-> b, id |-> id, c |-> c, D |-> D])
 
-ValidateOKMsg(p,q,b,id,c,D,Iq) ==
-    Message(TypeValidateOK,p,q,[b|->b,id|->id,c|->c,D|->D,Iq|->Iq])
+ValidateOKMsg(p, q, b, id, c, D, Iq) ==
+    Message(TypeValidateOK, p, q, [ b |-> b, id |-> id, c |-> c, D |-> D, Iq |-> Iq])
 
-WaitingMsg(p,q,id,k) ==
-    Message(TypeWaiting,p,q,[id|->id,k|->k])
+WaitingMsg(p, q, id, k) ==
+    Message(TypeWaiting, p, q, [ id |-> id, k |-> k])
 
 VARIABLES
     bal,           \* bal[p][id] = current ballot known by process p for command id
@@ -114,7 +114,7 @@ VARIABLES
     msgs,          \* multiset of network messages
     submitted,     \* set of submitted ids
     initCoord,     \* initCoord[id] = process that submitted id
-    recovered,     \* counter of times recoverd per (p,id)
+    recovered,     \* counter of times recoverd per (p, id)
     \* These variables are used to persist to local state in the RecoverOK part, which is split in 3 in my TLA spec.
     Ivar,               \* I[p]][id] used to keep track of I set in validateOK handler, which we need in PostWaiting handler.
     Qvar,               \* Q[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
@@ -632,7 +632,7 @@ Next ==     \/ \E m \in msgs :
                 \/ HandleValidate(m) 
 
             \/ \E q \in Proc, id \in Id :
-                Submit(q, id, id) 
+                Submit(q, id, id) \*use id as the payload
 
             \/ \E p \in Proc, id \in Id :
                 \/ StartRecover(p, id) 
