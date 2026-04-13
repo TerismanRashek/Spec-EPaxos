@@ -30,17 +30,6 @@ This specification models **execution only**, assuming that commands
 and their dependency sets have already been correctly committed. (commands are still submitted and committed in the code, but we "cheat" it by using globally accessing variables)
 
 
-### OnlyCommitSpec
-
-This folder contains a TLA⁺ specification of the **EPaxos commit protocol**,
-without recovery.
-
-The commit protocol is responsible for:
-- pre-accept, accept, and commit phases
-- fast-path and slow-path commits
-- dependency discovery for conflicting commands
-- ensuring agreement and visibility guarantees
-
 
 ### EPaxosCommitWithRecovery
 
