@@ -1,5 +1,5 @@
 ----------------------------- MODULE EPaxosCommitWithRecovery -----------------------------
-EXTENDS Naturals, FiniteSets, Sequences, TLC
+EXTENDS Naturals, FiniteSets, Sequences, TLC, ExtraConfiguration
 
 (* This file contains specification for the revised Egalitarian Paxos protocol detailed in the following paper :
 Making Democracy Work: Fixing and Simplifying Egalitarian Paxos.
@@ -143,12 +143,7 @@ Init ==
 (* Helpers                                                                 *)
 (***************************************************************************)
 
-\*constant to define the conflict relation,
-ConflictPairs == {
-    <<1, 3>>,
-    <<2, 3>>
-}
-
+\* Conflict pairs is a model constant defined in ExtraConfiguration, this is defined in a seperate file because the .cfg file does not parse sequences.
 Conflicts(c1, c2) ==
     IF c1 = Bottom \/ c2 = Bottom THEN FALSE
     ELSE IF c1 = Nop \/ c2 = Nop THEN TRUE
