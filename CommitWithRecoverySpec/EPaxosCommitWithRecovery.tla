@@ -143,7 +143,7 @@ Init ==
 (* Helpers                                                                 *)
 (***************************************************************************)
 
-\* Conflict pairs is a model constant defined in ExtraConfiguration, this is defined in a seperate file because the .cfg file does not parse sequences.
+\* Conflict pairs is a model constant defined in ExtraConfiguration, this is defined in a seperate file because the .cfg file does not parse sequences
 Conflicts(c1, c2) ==
     IF c1 = Bottom \/ c2 = Bottom THEN FALSE
     ELSE IF c1 = Nop \/ c2 = Nop THEN TRUE
