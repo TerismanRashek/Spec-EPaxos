@@ -33,12 +33,7 @@ and their dependency sets have already been correctly committed. (commands are s
 
 ### EPaxosCommitWithRecovery
 
-This folder contains the **full EPaxos specification**, including:
-
-
-This is the complete and most complex model in the repository.
-
-The code has the same code that the commit protocol had, with the recovery part added.
+This folder contains the **full EPaxos specification**
 
 ### Misc
 
