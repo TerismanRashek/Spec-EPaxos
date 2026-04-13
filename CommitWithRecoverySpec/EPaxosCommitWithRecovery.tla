@@ -88,8 +88,8 @@ RecoverOKMsg(p, q, b, id, abalq, cq, depq, initDepq, phaseq) ==
 ValidateMsg(p, q, b, id, c, D) ==
     Message(TypeValidate, p, q, [ b |-> b, id |-> id, c |-> c, D |-> D])
 
-ValidateOKMsg(p, q, b, id, c, D, Iq) ==
-    Message(TypeValidateOK, p, q, [ b |-> b, id |-> id, c |-> c, D |-> D, Iq |-> Iq])
+ValidateOKMsg(p, q, b, id, Iq) ==
+    Message(TypeValidateOK, p, q, [ b |-> b, id |-> id, Iq |-> Iq])
 
 WaitingMsg(p, q, id, k) ==
     Message(TypeWaiting, p, q, [ id |-> id, k |-> k])
@@ -109,13 +109,15 @@ VARIABLES
     \* These variables are used to persist to local state in the RecoverOK part, which is split in 3 in my TLA spec.
     Ivar,               \* Ivar[p]][id] used to keep track of I set in validateOK handler, which we need in PostWaiting handler.
     Qvar,               \* Qvar[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
+    Cvar,
+    Dvar,
     recoveryAttemptBal, \* bal of the current recovery attempt for [p][id]
     CardinalityRmax,    \* they only appear because I have the split the pseudocode of RecoverOK in 3 handlers and these local variables are lost from one handler to the other.    
     postWaitingFlag     
 
 
 vars ==
-    << bal, abal, cmd, initCmd, dep, initDep, phase, msgs, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
+    << bal, abal, cmd, initCmd, dep, initDep, phase, msgs, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal >>
 
 (***************************************************************************)
 (* Initialisation                                                            *)
@@ -135,6 +137,8 @@ Init ==
     /\ msgs = {}
     /\ Ivar = [p \in Proc |-> [id \in Id |-> {}]]
     /\ Qvar = [p \in Proc |-> [id \in Id |-> {}]]
+    /\ Dvar = [p \in Proc |-> [id \in Id |-> {}]]
+    /\ Cvar = [p \in Proc |-> [id \in Id |-> Bottom]]
     /\ recoveryAttemptBal = [p \in Proc |-> [id \in Id |-> 0]]
     /\ CardinalityRmax = [p \in Proc |-> [id \in Id |-> 0]]
     /\ postWaitingFlag = [p \in Proc |-> [id \in Id |-> FALSE]]
@@ -237,7 +241,7 @@ Submit(p, id, c) ==
         /\ ApplyPreAccept(p, p, id, c, D0) \* Apply the self sent message immediately, and then send the preAcceptOk response as well.
         /\ msgs' = msgs \cup { PreAcceptMsg(p, q, id, c, D0) : q \in Proc \ {p}} 
                         \cup { PreAcceptOKMsg(p, p, id, D0)}
-    /\  UNCHANGED <<bal, abal, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal>> 
+    /\  UNCHANGED <<bal, abal, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>> 
 
 (***************************************************************************)
 (* 11–18 HandlePreAccept                                                   *)
@@ -249,7 +253,7 @@ HandlePreAccept(m) ==
         IN  
         /\  ApplyPreAccept(m.to, m.from, m.body.id, m.body.c, m.body.D)
         /\  msgs' = (msgs \ {m}) \cup { PreAcceptOKMsg(m.to, m.from, m.body.id, Dfinal) }
-    /\  UNCHANGED <<abal, submitted, bal, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal>>
+    /\  UNCHANGED <<abal, submitted, bal, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>>
 
 (***************************************************************************)
 (* 19–25 HandlePreAcceptOk                                                 *)
@@ -279,7 +283,7 @@ HandlePreAcceptOK(p, id) ==
                     /\ ApplyAccept(p, p, 0, id, cmd[p][id], Dfinal) \* Apply accpet, and add the response message that the self sent Accept message would have produced
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc \ {p}} 
                                                          \cup { AcceptOKMsg(p, p, 0, id)}
-    /\ UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal>>
+    /\ UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>>
 
 (***************************************************************************)
 (* 26–33 HandleAccept                                                      *)
@@ -288,7 +292,7 @@ HandleAccept(m) ==
     /\  m.type = TypeAccept
     /\  ApplyAccept(m.to, m.from, m.body.b, m.body.id, m.body.c, m.body.D)
     /\  msgs' = (msgs \ {m}) \cup { AcceptOKMsg(m.to, m.from, m.body.b, m.body.id)}
-    /\  UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal>>
+    /\  UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>>
 
 (***************************************************************************)
 (* 34–36 HandleAcceptOk                                                    *)
@@ -304,7 +308,7 @@ HandleAcceptOK(p, id) ==
         /\  IsQuorumSized(quorumOfMessages)
         /\  ApplyCommit(p, p, bal[p][id], id, cmd[p][id], dep[p][id])
         /\  msgs' = (msgs \ quorumOfMessages) \cup {CommitMsg(p, q, bal[p][id], id, cmd[p][id], dep[p][id]) : q \in Proc \ {p}}
-    /\ UNCHANGED <<bal, initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal>>
+    /\ UNCHANGED <<bal, initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>>
 
 (***************************************************************************)
 (* 37–42 HandleCommit                                                      *)
@@ -313,7 +317,7 @@ HandleCommit(m) ==
     /\  m.type = TypeCommit
     /\  ApplyCommit(m.to, m.from, m.body.b, m.body.id, m.body.c, m.body.D)
     /\  msgs' = msgs \ {m}
-    /\  UNCHANGED <<bal, initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal>>
+    /\  UNCHANGED <<bal, initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>>
 
 
 (***************************************************************************)
@@ -331,7 +335,7 @@ StartRecover(p, id) ==
         /\ ApplyRecover(p, p, b, id)
         /\ msgs' = msgs \cup {RecoverMsg(p, q, b, id) : q \in Proc \ {p}} 
                         \cup {RecoverOKMsg(p, p, b, id, abal[p][id], cmd[p][id], dep[p][id], initDep[p][id], phase[p][id])}
-    /\ UNCHANGED <<abal, cmd, initCmd, dep, initDep, phase, submitted, initCoord, Qvar, CardinalityRmax, Ivar, recoveryAttemptBal>>
+    /\ UNCHANGED <<abal, cmd, initCmd, dep, initDep, phase, submitted, initCoord, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, recoveryAttemptBal>>
 
 (***************************************************************************)
 (* 46–49 HandleRecover                                                     *)
@@ -345,7 +349,7 @@ HandleRecover(m) ==
         IN
         /\ ApplyRecover(p, q, b, id)
         /\ msgs' = (msgs \ {m}) \cup {RecoverOKMsg(p, q, b, id, abal[p][id], cmd[p][id], dep[p][id], initDep[p][id], phase[p][id])}
-    /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
+    /\ UNCHANGED << abal, cmd, initCmd, dep, initDep, phase, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal >>
 
 
 (***************************************************************************)
@@ -372,7 +376,7 @@ HandleRecoverOK(p, id) ==
                                 IN
                                 /\ ApplyCommit(p, p, bal[p][id], id, n.body.cq, n.body.depq)                    
                                 /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q2, bal[p][id], id, n.body.cq, n.body.depq) : q2 \in Proc  \ {p}}
-                                /\ UNCHANGED <<Qvar, CardinalityRmax, recoveryAttemptBal, bal, initCmd, initDep>>
+                                /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, bal, initCmd, initDep>>
 
                 ELSE    IF (\E n \in U : n.body.phaseq = AcceptedPhase)
                         THEN    
@@ -382,14 +386,14 @@ HandleRecoverOK(p, id) ==
                                 /\ ApplyAccept(p, p, bal[p][id], id, n.body.cq, n.body.depq)  
                                 /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q2, bal[p][id], id, n.body.cq, n.body.depq) : q2 \in Proc \ {p} } 
                                                                         \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                                /\ UNCHANGED <<Qvar, CardinalityRmax, recoveryAttemptBal, initCmd, initDep>>
+                                /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep>>
 
                 ELSE    IF (initCoord[id] \in Q)
                         THEN
                             /\ ApplyAccept(p, p, bal[p][id], id, Nop, {})
                             /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc \ {p} } 
                                                                  \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                            /\ UNCHANGED <<Qvar, CardinalityRmax, recoveryAttemptBal, initCmd, initDep>>
+                            /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep>>
 
                 ELSE    IF (LET Rmax == { n \in quorumOfMessages :
                                                 /\ n.body.phaseq = PreAcceptedPhase
@@ -406,19 +410,21 @@ HandleRecoverOK(p, id) ==
                                 D == n.body.depq
                             IN
                             /\  Qvar' = [Qvar EXCEPT ![p][id] = Q]
+                            /\  Cvar' = [Cvar EXCEPT ![p][id] = c]
+                            /\  Dvar' = [Dvar EXCEPT ![p][id] = D]
                             /\  recoveryAttemptBal' = [recoveryAttemptBal EXCEPT ![p][id] = bal[p][id]]
                             /\  CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
                             /\  LET I == ComputeI(p, id, c, D)
                                 IN
                                 /\ ApplyValidate(p, p, bal[p][id], id, c, D)
                                 /\ msgs' = (msgs \ quorumOfMessages) \cup {ValidateMsg(p, q, bal[p][id], id, c, D) : q \in Q \ {p}} 
-                                                                     \cup {ValidateOKMsg(p, p, bal[p][id], id, c, D, I)}
+                                                                     \cup {ValidateOKMsg(p, p, bal[p][id], id, I)}
                                 /\ UNCHANGED << bal, abal, dep, phase>>
                             
                 ELSE (  /\ ApplyAccept(p, p, bal[p][id], id, Nop, {})  
                         /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc \ {p}} 
                                                              \cup { AcceptOKMsg(p, p, bal[p][id], id)}
-                        /\ UNCHANGED <<Qvar, CardinalityRmax, recoveryAttemptBal, initCmd, initDep>>)
+                        /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep>>)
     
     /\ UNCHANGED <<submitted, initCoord, recovered, Ivar, postWaitingFlag >>
 
@@ -437,14 +443,16 @@ HandleValidate(m) ==
         LET I == ComputeI(p, id, c, D)
         IN
         /\ ApplyValidate(p, q, b, id, c, D)
-        /\ msgs' = (msgs \ {m}) \cup { ValidateOKMsg(p, q, b, id, c, D, I)}
-    /\ UNCHANGED << bal, abal, dep, phase, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, postWaitingFlag, recoveryAttemptBal >>
+        /\ msgs' = (msgs \ {m}) \cup { ValidateOKMsg(p, q, b, id, I)}
+    /\ UNCHANGED << bal, abal, dep, phase, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal >>
 
 (***************************************************************************)
 (* 61–68 HandleValidateOK                                                  *)
 (***************************************************************************)
 HandleValidateOK(p, id) ==
     /\  LET Q == Qvar[p][id]
+            c == Cvar[p][id]
+            D == Dvar[p][id]
         IN 
         /\  Q # {}
         /\  LET quorumOfMessages ==
@@ -455,34 +463,28 @@ HandleValidateOK(p, id) ==
                     /\ m.body.b = bal[p][id] } \* must recheck Im still in the same ballot
                 I == UNION {m.body.Iq : m \in quorumOfMessages}
             IN
-            /\  {n.from : n \in quorumOfMessages} = Q \* check that exactly Q responded
-            /\  LET m == CHOOSE m \in quorumOfMessages : TRUE
-                IN 
-                LET c == m.body.c
-                    D == m.body.D
-                IN      
-                /\  IF (I = {}) THEN
-                        /\ ApplyAccept(p, p, bal[p][id], id, c, D)    
-                        /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, c, D) : q \in Proc \ {p} } 
-                                                             \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                        /\ UNCHANGED <<Ivar, postWaitingFlag>>
-                                
-                    ELSE IF 
-                        ((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
-                        THEN
-                        /\ ApplyAccept(p, p, bal[p][id], id, Nop, {})     
-                        /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc  \ {p}} 
-                                                             \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                          
-                        /\ UNCHANGED <<Ivar, postWaitingFlag>>
-                                
-                    ELSE
-                        /\ Ivar' = [Ivar EXCEPT ![p][id] = I]
-                        /\ msgs' = (msgs \ quorumOfMessages) \cup { WaitingMsg(p, q, id, CardinalityRmax[p][id]) : q \in Proc \ {p} }
-                        /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = TRUE]
-                        /\ UNCHANGED <<bal, abal, cmd, phase, dep>>
-
-    /\ UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, recoveryAttemptBal>>
+            /\  {n.from : n \in quorumOfMessages} = Q \* check that exactly Q responded     
+            /\  IF (I = {}) THEN
+                    /\ ApplyAccept(p, p, bal[p][id], id, c, D)    
+                    /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, c, D) : q \in Proc \ {p} } 
+                                                            \cup { AcceptOKMsg(p, p, bal[p][id], id) }
+                    /\ UNCHANGED <<Ivar, postWaitingFlag>>
+                            
+                ELSE IF 
+                    ((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
+                    THEN
+                    /\ ApplyAccept(p, p, bal[p][id], id, Nop, {})     
+                    /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc  \ {p}} 
+                                                            \cup { AcceptOKMsg(p, p, bal[p][id], id) }
+                        
+                    /\ UNCHANGED <<Ivar, postWaitingFlag>>
+                            
+                ELSE
+                    /\ Ivar' = [Ivar EXCEPT ![p][id] = I]
+                    /\ msgs' = (msgs \ quorumOfMessages) \cup { WaitingMsg(p, q, id, CardinalityRmax[p][id]) : q \in Proc \ {p} }
+                    /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = TRUE]
+                    /\ UNCHANGED <<bal, abal, cmd, phase, dep>>
+    /\ UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal>>
 
 (***************************************************************************)
 (* 69–80 HandlePostWaitingMsg                                                 *)
@@ -494,7 +496,9 @@ HandlePostWaiting(p, id) ==
     /\  LET 
            I == Ivar[p][id]
            Q == Qvar[p][id]
-           b == bal[p][id] 
+           b == bal[p][id]
+           c == Cvar[p][id]
+           D == Dvar[p][id] 
         IN      \/ (\E x \in I :
                         x[2] = CommittedPhase /\
                         cmd[p][x[1]] # Nop /\
@@ -507,7 +511,7 @@ HandlePostWaiting(p, id) ==
                 \/ (\A x \in I :
                     /\ x[2] = CommittedPhase /\ (cmd[p][x[1]] = Nop \/ id \in dep[p][x[1]])
                     /\ ApplyAccept(p, p, bal[p][id], id, cmd[p][id], dep[p][id])
-                    /\ msgs' =  msgs \cup { AcceptMsg(p, q, bal[p][id], id, cmd[p][id], dep[p][id]) : q  \in Proc \ {p}} 
+                    /\ msgs' =  msgs \cup { AcceptMsg(p, q, bal[p][id], id, c, D) : q  \in Proc \ {p}} 
                                      \cup { AcceptOKMsg(p, p, bal[p][id], id)}
                     /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE])
 
@@ -546,7 +550,7 @@ HandlePostWaiting(p, id) ==
                                 )
                 
 
-    /\ UNCHANGED << initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Ivar, recoveryAttemptBal >>
+    /\ UNCHANGED << initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, recoveryAttemptBal >>
 
 
 (***************************************************************************)
