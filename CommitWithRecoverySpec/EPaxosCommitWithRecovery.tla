@@ -97,7 +97,7 @@ VARIABLES
     submitted,     \* set of submitted ids
     initCoord,     \* initCoord[id] = process that submitted id
     recovered,     \* recovered[p][id] = counter of times recovery is invoked
-    \* The following variables are used to persist to local state in the RecoverOK part, which is split in 3 in the TLA spec.
+    \* The following variables are used to persist to local state in the RecoverOK part, which is split in 3 handlers in the TLA spec.
     Ivar,          \* Ivar[p]][id] used to keep track of I set in validateOK handler, which we need in PostWaiting handler.
     Qvar,          \* Qvar[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
     Cvar,
@@ -207,13 +207,13 @@ ApplyValidate(p, q, b, id, c, D) ==
     /\ initDep' = [initDep  EXCEPT ![p][id] = D]
 
 ComputeI(p, id, c, D) ==  {<<id2, phase[p][id2]>> : id2 \in 
-                        { id3 \in Id :
-                            /\ id3 # id 
-                            /\ id3 \notin D 
-                            /\ (phase[p][id3] = CommittedPhase => (cmd[p][id3] # Nop /\ id \notin dep[p][id3] /\ Conflicts(c, cmd[p][id3]) ))
-                            /\ (phase[p][id3] # CommittedPhase => (initCmd[p][id3] # Bottom /\ id \notin initDep[p][id3] /\ Conflicts(c, initCmd[p][id3])))
-                        }
-                        }
+                                { id3 \in Id :
+                                    /\ id3 # id 
+                                    /\ id3 \notin D 
+                                    /\ (phase[p][id3] = CommittedPhase => (cmd[p][id3] # Nop /\ id \notin dep[p][id3] /\ Conflicts(c, cmd[p][id3]) ))
+                                    /\ (phase[p][id3] # CommittedPhase => (initCmd[p][id3] # Bottom /\ id \notin initDep[p][id3] /\ Conflicts(c, initCmd[p][id3])))
+                                }
+                          }
 
 (***************************************************************************)
 (* Message handling actions                                                *)
@@ -236,7 +236,6 @@ Submit(p, id, c) ==
 (***************************************************************************)
 (* HandlePreAccept (lines 11–18)                                           *)
 (***************************************************************************)                    
-
 HandlePreAccept(m) ==
     /\  m.type = TypePreAccept
     /\  LET Dfinal == m.body.D \cup ConflictingIds(m.to, m.body.c)
@@ -253,10 +252,10 @@ HandlePreAcceptOK(p, id) ==
     /\  bal[p][id] = 0
     /\  phase[p][id] = PreAcceptedPhase
     /\  LET quorumOfMessages ==
-            {  m \in msgs :
-                    /\ m.type = TypePreAcceptOK
-                    /\ m.body.id = id
-                    /\ m.to = p
+            { m \in msgs :
+                /\ m.type = TypePreAcceptOK
+                /\ m.body.id = id
+                /\ m.to = p
             }
         IN
         /\  IsQuorumSized(quorumOfMessages)
@@ -289,11 +288,13 @@ HandleAccept(m) ==
 (***************************************************************************)
 HandleAcceptOK(p, id) ==
     /\  phase[p][id] = AcceptedPhase
-    /\  LET quorumOfMessages == { k \in msgs :
-        /\  k.type = TypeAcceptOK
-        /\  k.to = p
-        /\  k.body.b = bal[p][id]
-        /\  k.body.id = id }   
+    /\  LET quorumOfMessages == 
+            { k \in msgs :
+                /\  k.type = TypeAcceptOK
+                /\  k.to = p
+                /\  k.body.b = bal[p][id]
+                /\  k.body.id = id 
+            }   
         IN
         /\  IsQuorumSized(quorumOfMessages)
         /\  ApplyCommit(p, p, bal[p][id], id, cmd[p][id], dep[p][id])
@@ -345,11 +346,12 @@ HandleRecover(m) ==
 (***************************************************************************)
 HandleRecoverOK(p, id) ==
     /\  LET quorumOfMessages ==
-        { k \in msgs :
-            /\ k.type = TypeRecoverOK
-            /\ k.to = p 
-            /\ k.body.id = id 
-            /\ k.body.b = bal[p][id]  }
+            { k \in msgs :
+                /\ k.type = TypeRecoverOK
+                /\ k.to = p 
+                /\ k.body.id = id 
+                /\ k.body.b = bal[p][id]  
+            }
         IN
         /\  IsQuorumSized(quorumOfMessages) 
         /\  LET Q == { k.from : k \in quorumOfMessages }
@@ -372,7 +374,7 @@ HandleRecoverOK(p, id) ==
                                 IN
                                 /\ ApplyAccept(p, p, bal[p][id], id, n.body.cq, n.body.depq)  
                                 /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q2, bal[p][id], id, n.body.cq, n.body.depq) : q2 \in Proc \ {p} } 
-                                                                        \cup { AcceptOKMsg(p, p, bal[p][id], id) }
+                                                                     \cup { AcceptOKMsg(p, p, bal[p][id], id) }
                                 /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep>>
                 ELSE    IF (initCoord[id] \in Q)
                         THEN
@@ -408,7 +410,7 @@ HandleRecoverOK(p, id) ==
                 ELSE (  /\ ApplyAccept(p, p, bal[p][id], id, Nop, {})  
                         /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc \ {p} } 
                                                              \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                        /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep>>)
+                        /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep>> )
     /\ UNCHANGED <<submitted, initCoord, recovered, Ivar, postWaitingFlag >>
 
 (***************************************************************************)
@@ -443,21 +445,22 @@ HandleValidateOK(p, id) ==
                     /\ m.type = TypeValidateOK 
                     /\ m.to = p 
                     /\ m.body.id = id 
-                    /\ m.body.b = bal[p][id] } \* must recheck Im still in the same ballot
+                    /\ m.body.b = bal[p][id] \* must recheck Im still in the same ballot
+                }
                 I == UNION { m.body.Iq : m \in quorumOfMessages }
             IN
             /\  { n.from : n \in quorumOfMessages } = Q \* check that exactly Q responded     
             /\  IF (I = {}) THEN
                     /\ ApplyAccept(p, p, bal[p][id], id, c, D)    
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, c, D) : q \in Proc \ {p} } 
-                                                            \cup { AcceptOKMsg(p, p, bal[p][id], id) }
+                                                         \cup { AcceptOKMsg(p, p, bal[p][id], id) }
                     /\ UNCHANGED <<Ivar, postWaitingFlag>>
                 ELSE IF 
                     ((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
                     THEN
                     /\ ApplyAccept(p, p, bal[p][id], id, Nop, {})     
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc  \ {p} } 
-                                                            \cup { AcceptOKMsg(p, p, bal[p][id], id) }
+                                                         \cup { AcceptOKMsg(p, p, bal[p][id], id) }
                         
                     /\ UNCHANGED <<Ivar, postWaitingFlag>>
                 ELSE
