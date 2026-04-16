@@ -148,8 +148,13 @@ IsFastQuorumSized(set) == Cardinality(set) >= Cardinality(Proc) - E
 
 ConflictingIds(p, c) ==
     { id \in Id :
-        /\ Conflicts(cmd[p][id], c)
+        Conflicts(cmd[p][id], c)
     }
+
+SeenIds(p) ==
+    {id \in Id : 
+        \/ cmd[p][id] # Bottom
+        \/ \E id2 \in Id : id \in dep[p][id2]}
 
 (***************************************************************************)
 (* State-changing actions                                                  *)
@@ -264,10 +269,10 @@ HandlePreAcceptOK(p, id) ==
             IN
             IF IsFastQuorumSized(largestFastQuorum) THEN
                     /\ ApplyCommit(p, p, 0, id, cmd[p][id], initDep[p][id]) \* Apply Commit, no response message to add
-                    /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q, 0, id, cmd[p][id], initDep[p][id]) : q \in Proc \ {p} }
+                    /\ msgs' = (msgs \ largestFastQuorum) \cup { CommitMsg(p, q, 0, id, cmd[p][id], initDep[p][id]) : q \in Proc \ {p} }
                     /\ UNCHANGED bal
             ELSE        
-                /\  LET Dfinal == UNION { m.body.Dq : m \in quorumOfMessages }
+                    LET Dfinal == UNION { m.body.Dq : m \in quorumOfMessages }
                     IN
                     /\ ApplyAccept(p, p, 0, id, cmd[p][id], Dfinal) \* Apply accpet, and add the response message that the self sent Accept message would have produced
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc \ {p} }
@@ -317,6 +322,7 @@ StartRecover(p, id) ==
     /\ phase[p][id] # CommittedPhase
     \* We count the number of times a process has tried to recover a command to avoid model checker exploding
     /\ recovered[p][id] < NumberOfRecoveryAttempts
+    /\ id \in SeenIds(p)
     /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE] 
     /\ recovered'       = [recovered       EXCEPT ![p][id] = recovered[p][id] + 1]
     \* Ballots owned by p are of the form k*N + p.
@@ -484,7 +490,7 @@ HandlePostWaiting(p, id) ==
            c == Cvar[p][id]
            D == Dvar[p][id] 
         IN      \/ (\E x \in I :
-                        x[2] = CommittedPhase /\
+                        phase[p][x[1]] = CommittedPhase /\
                         cmd[p][x[1]] # Nop /\
                         id \notin dep[p][x[1]]
                     /\ ApplyAccept(p, p, bal[p][id], id, Nop, {})
@@ -492,8 +498,8 @@ HandlePostWaiting(p, id) ==
                                     \cup { AcceptOKMsg(p, p, bal[p][id], id) }
                     /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE])    
                 \/ (\A x \in I :
-                    /\ x[2] = CommittedPhase /\ (cmd[p][x[1]] = Nop \/ id \in dep[p][x[1]])
-                    /\ ApplyAccept(p, p, bal[p][id], id, cmd[p][id], dep[p][id])
+                    /\ phase[p][x[1]] = CommittedPhase /\ (cmd[p][x[1]] = Nop \/ id \in dep[p][x[1]])
+                    /\ ApplyAccept(p, p, bal[p][id], id, c, D)
                     /\ msgs' =  msgs \cup { AcceptMsg(p, q, bal[p][id], id, c, D) : q  \in Proc \ {p} } 
                                      \cup { AcceptOKMsg(p, p, bal[p][id], id) }
                     /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE])
