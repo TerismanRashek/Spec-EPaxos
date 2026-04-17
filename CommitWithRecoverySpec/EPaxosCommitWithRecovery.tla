@@ -51,10 +51,11 @@ InitialPhase == 1
 PreAcceptedPhase == 2
 AcceptedPhase == 3
 CommittedPhase == 4
-\* Recovery Phase constants
+
+\* Recovery phase constants
 StartPhase == 1
-RecoverOkPhase == 2
-ValidateOkPhase == 3
+RecoverOKPhase == 2
+ValidateOKPhase == 3
 PostWaitingPhase == 4
 
 Message(type, from, to, body) ==
@@ -105,11 +106,11 @@ VARIABLES
     \* The following variables are used to persist to local state in the RecoverOK handler, which is split into 3 in the TLA spec:
     Qvar,               \* Qvar[p][id] = Q in the RecoverOK handler
     Cvar,               \* Cvar[p][id] = c in the RecoverOK handler
-    Dvar,               \* Cvar[p][id] = D in the RecoverOK handler
-    recoveryAttemptBal, \* recoveryAttemptBal[p][id] = the ballot of the current recovery attempt for p and id
-    Ivar,               \* Ivar[p][id] = I in the RecoverOK handler
+    Dvar,               \* Dvar[p][id] = D in the RecoverOK handler
     CardinalityRmax,    \* CardinalityRmax[p][id] = |R_max| in the RecoverOK handler
-    recoveryPhase       \* recoveryPhase[p][id] ∈ {StartPhase,RecoverOkPhase,ValidateOkPhase,PostWaitingPhase}
+    Ivar,               \* Ivar[p][id] = I in the RecoverOK handler
+    recoveryAttemptBal, \* recoveryAttemptBal[p][id] = the ballot of the current recovery attempt for p and id
+    recoveryPhase       \* recoveryPhase[p][id] ∈ {StartPhase,RecoverOKPhase,ValidateOKPhase,PostWaitingPhase}
 
 vars ==
     <<bal, abal, cmd, initCmd, dep, initDep, phase, msgs, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, recoveryAttemptBal, recoveryPhase>>
@@ -259,7 +260,6 @@ HandlePreAccept(m) ==
 (***************************************************************************)
 (* HandlePreAcceptOK (lines 19–25)                                         *)
 (***************************************************************************)
-
 HandlePreAcceptOK(p, id) ==
     /\  bal[p][id] = 0
     /\  phase[p][id] = PreAcceptedPhase
@@ -330,13 +330,13 @@ StartRecover(p, id) ==
     /\  recovered[p][id] < NumberOfRecoveryAttempts
     /\  id \in SeenIds(p)
     /\  recovered' = [recovered EXCEPT ![p][id] = recovered[p][id] + 1]
-    \*  Ballots owned by p are of the form k*N + p.
+    \*  Ballots owned by p are of the form k*N + p
     /\  LET  b == IF bal[p][id] = 0 THEN p ELSE bal[p][id] + Cardinality(Proc)
         IN
         /\  ApplyRecover(p, p, b, id)
         /\  msgs' = msgs \cup { RecoverMsg(p, q, b, id) : q \in Proc \ {p} } 
                          \cup { RecoverOKMsg(p, p, b, id, abal[p][id], cmd[p][id], dep[p][id], initDep[p][id], phase[p][id]) }
-        /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = RecoverOkPhase]
+        /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = RecoverOKPhase]
     /\  UNCHANGED <<abal, cmd, initCmd, dep, initDep, phase, submitted, initCoord, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, recoveryAttemptBal>>
 
 (***************************************************************************)
@@ -351,13 +351,13 @@ HandleRecover(m) ==
         IN
         /\  ApplyRecover(p, q, b, id)
         /\  msgs' = (msgs \ {m}) \cup { RecoverOKMsg(p, q, b, id, abal[p][id], cmd[p][id], dep[p][id], initDep[p][id], phase[p][id]) }
-    /\  UNCHANGED << abal, cmd, initCmd, dep, initDep, phase, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, recoveryAttemptBal, recoveryPhase>>
+    /\  UNCHANGED <<abal, cmd, initCmd, dep, initDep, phase, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, recoveryAttemptBal, recoveryPhase>>
 
 (***************************************************************************)
 (* HandleRecoverOK (lines 50–60)                                           *)
 (***************************************************************************)
 HandleRecoverOK(p, id) ==
-    /\  recoveryPhase[p][id] = RecoverOkPhase
+    /\  recoveryPhase[p][id] = RecoverOKPhase
     /\  LET quorumOfMessages ==
             { k \in msgs :
                 /\  k.type = TypeRecoverOK
@@ -412,20 +412,20 @@ HandleRecoverOK(p, id) ==
                             /\  Qvar' = [Qvar EXCEPT ![p][id] = Q]
                             /\  Cvar' = [Cvar EXCEPT ![p][id] = c]
                             /\  Dvar' = [Dvar EXCEPT ![p][id] = D]
-                            /\  recoveryAttemptBal' = [recoveryAttemptBal EXCEPT ![p][id] = bal[p][id]]
                             /\  CardinalityRmax' = [CardinalityRmax EXCEPT ![p][id] = Cardinality(Rmax)]
-                            /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = ValidateOkPhase]
+                            /\  recoveryAttemptBal' = [recoveryAttemptBal EXCEPT ![p][id] = bal[p][id]]
+                            /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = ValidateOKPhase]
                             /\  LET I == ComputeI(p, id, c, D)
                                 IN
                                 /\  ApplyValidate(p, p, bal[p][id], id, c, D)
                                 /\  msgs' = (msgs \ quorumOfMessages) \cup { ValidateMsg(p, q, bal[p][id], id, c, D) : q \in Q \ {p} } 
                                                                       \cup { ValidateOKMsg(p, p, bal[p][id], id, I) }
-                                /\  UNCHANGED << bal, abal, dep, phase>>
+                                /\  UNCHANGED <<bal, abal, dep, phase>>
                 ELSE (  /\  ApplyAccept(p, p, bal[p][id], id, Nop, {})  
                         /\  msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc \ {p} } 
                                                               \cup { AcceptOKMsg(p, p, bal[p][id], id) }
                         /\  UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep, recoveryPhase>> )
-    /\  UNCHANGED <<submitted, initCoord, recovered, Ivar >>
+    /\  UNCHANGED <<submitted, initCoord, recovered, Ivar>>
 
 (***************************************************************************)
 (* HandleValidate (lines 81–87)                                            *)
@@ -449,7 +449,7 @@ HandleValidate(m) ==
 (* HandleValidateOK (lines 61–68)                                          *)
 (***************************************************************************)
 HandleValidateOK(p, id) ==
-    /\  recoveryPhase[p][id] = ValidateOkPhase
+    /\  recoveryPhase[p][id] = ValidateOKPhase
     /\  LET Q == Qvar[p][id]
             c == Cvar[p][id]
             D == Dvar[p][id]
@@ -459,37 +459,36 @@ HandleValidateOK(p, id) ==
                 /\ m.type = TypeValidateOK 
                 /\ m.to = p 
                 /\ m.body.id = id 
-                /\ m.body.b = bal[p][id] \* must recheck Im still in the same ballot
+                /\ m.body.b = bal[p][id]
             }
             I == UNION { m.body.Iq : m \in quorumOfMessages }
         IN
-        /\  { n.from : n \in quorumOfMessages } = Q \* check that exactly Q responded     
+        /\  { n.from : n \in quorumOfMessages } = Q
         /\  IF (I = {}) THEN
                 /\  ApplyAccept(p, p, bal[p][id], id, c, D)    
                 /\  msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, c, D) : q \in Proc \ {p} } 
-                                                        \cup { AcceptOKMsg(p, p, bal[p][id], id) }
+                                                      \cup { AcceptOKMsg(p, p, bal[p][id], id) }
                 /\  UNCHANGED <<Ivar, recoveryPhase>>
             ELSE IF 
                 ((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
                 THEN
                 /\  ApplyAccept(p, p, bal[p][id], id, Nop, {})     
                 /\  msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc  \ {p} } 
-                                                        \cup { AcceptOKMsg(p, p, bal[p][id], id) }
+                                                      \cup { AcceptOKMsg(p, p, bal[p][id], id) }
                 /\  UNCHANGED <<Ivar, recoveryPhase>>
             ELSE
                 /\  Ivar' = [Ivar EXCEPT ![p][id] = I]
-                /\  msgs' = (msgs \ quorumOfMessages) \cup { WaitingMsg(p, q, id, CardinalityRmax[p][id]) : q \in Proc \ {p} }
                 /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = PostWaitingPhase]
+                /\  msgs' = (msgs \ quorumOfMessages) \cup { WaitingMsg(p, q, id, CardinalityRmax[p][id]) : q \in Proc \ {p} }
                 /\  UNCHANGED <<bal, abal, cmd, phase, dep>>
     /\  UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal>>
 
 (***************************************************************************)
 (* HandlePostWaiting (lines 69–80)                                         *)
 (***************************************************************************)
-                    
 HandlePostWaiting(p, id) ==
-    /\  recoveryAttemptBal[p][id] = bal[p][id] \* I'm not getting the ballot of corresponding recovery attempt from messages here so I use this extra variable to check ballot.
     /\  recoveryPhase[p][id] = PostWaitingPhase
+    /\  recoveryAttemptBal[p][id] = bal[p][id]
     /\  LET 
            I == Ivar[p][id]
            Q == Qvar[p][id]
@@ -497,9 +496,7 @@ HandlePostWaiting(p, id) ==
            c == Cvar[p][id]
            D == Dvar[p][id] 
         IN      \/  (\E x \in I :
-                        phase[p][x[1]] = CommittedPhase /\
-                        cmd[p][x[1]] # Nop /\
-                        id \notin dep[p][x[1]]
+                    /\  phase[p][x[1]] = CommittedPhase /\ cmd[p][x[1]] # Nop /\ id \notin dep[p][x[1]]
                     /\  ApplyAccept(p, p, bal[p][id], id, Nop, {})
                     /\  msgs' = msgs \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc \ {p} } 
                                      \cup { AcceptOKMsg(p, p, bal[p][id], id) }
@@ -542,7 +539,7 @@ HandlePostWaiting(p, id) ==
                                                  \cup { AcceptOKMsg(p, p, bal[p][id], id) }
                                 /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = StartPhase]
                                 )
-    /\  UNCHANGED << initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, recoveryAttemptBal >>
+    /\  UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, recoveryAttemptBal>>
 
 (***************************************************************************)
 (* Invariants                                                              *)
@@ -592,23 +589,22 @@ TypeInv ==
 (* Next state relation                                                     *)
 (***************************************************************************)
 
-Next ==     \/ \E m \in msgs :
-                \/  HandlePreAccept(m) 
-                \/  HandleAccept(m)
-                \/  HandleCommit(m) 
-                \/  HandleRecover(m) 
-                \/  HandleValidate(m) 
-            \/ \E p \in Proc, id \in Id :
-                \/  Submit(p, id, id) \* Use id as the payload for model checking
-                \/  StartRecover(p, id)
-                \/  HandlePreAcceptOK(p, id) 
-                \/  HandleValidateOK(p, id) 
-                \/  HandlePostWaiting(p, id) 
-                \/  HandleRecoverOK(p, id) 
-                \/  HandleAcceptOK(p, id) 
+Next == \/ \E m \in msgs :
+            \/  HandlePreAccept(m) 
+            \/  HandleAccept(m)
+            \/  HandleCommit(m) 
+            \/  HandleRecover(m) 
+            \/  HandleValidate(m) 
+        \/ \E p \in Proc, id \in Id :
+            \/  Submit(p, id, id) \* Use id as the payload for model checking
+            \/  StartRecover(p, id)
+            \/  HandlePreAcceptOK(p, id) 
+            \/  HandleValidateOK(p, id) 
+            \/  HandlePostWaiting(p, id) 
+            \/  HandleRecoverOK(p, id) 
+            \/  HandleAcceptOK(p, id)
 
 Spec ==
-    Init /\ [][Next]_<< vars >>
-
+    Init /\ [][Next]_<<vars>>
 
 =============================================================================
