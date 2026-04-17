@@ -377,24 +377,27 @@ HandleRecoverOK(p, id) ==
                             /\  LET n == CHOOSE n \in U :
                                             n.body.phaseq = CommittedPhase
                                 IN
-                                /\ ApplyCommit(p, p, bal[p][id], id, n.body.cq, n.body.depq)                    
-                                /\ msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q2, bal[p][id], id, n.body.cq, n.body.depq) : q2 \in Proc  \ {p} }
-                                /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, bal, initCmd, initDep, recoveryPhase>>
+                                /\  ApplyCommit(p, p, bal[p][id], id, n.body.cq, n.body.depq)                    
+                                /\  msgs' = (msgs \ quorumOfMessages) \cup { CommitMsg(p, q2, bal[p][id], id, n.body.cq, n.body.depq) : q2 \in Proc  \ {p} }
+                                /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = StartPhase]
+                                /\  UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, bal, initCmd, initDep>>
                 ELSE    IF (\E n \in U : n.body.phaseq = AcceptedPhase)
                         THEN    
                             /\  LET n == CHOOSE n \in U :
                                     n.body.phaseq = AcceptedPhase
                                 IN
-                                /\ ApplyAccept(p, p, bal[p][id], id, n.body.cq, n.body.depq)  
-                                /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q2, bal[p][id], id, n.body.cq, n.body.depq) : q2 \in Proc \ {p} } 
-                                                                     \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                                /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep, recoveryPhase>>
+                                /\  ApplyAccept(p, p, bal[p][id], id, n.body.cq, n.body.depq)  
+                                /\  msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q2, bal[p][id], id, n.body.cq, n.body.depq) : q2 \in Proc \ {p} } 
+                                                                       \cup { AcceptOKMsg(p, p, bal[p][id], id) }
+                                /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = StartPhase]
+                                /\  UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep>>
                 ELSE    IF (initCoord[id] \in Q)
                         THEN
-                            /\ ApplyAccept(p, p, bal[p][id], id, Nop, {})
-                            /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc \ {p} } 
-                                                                 \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                            /\ UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep, recoveryPhase>>
+                            /\  ApplyAccept(p, p, bal[p][id], id, Nop, {})
+                            /\  msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc \ {p} } 
+                                                                  \cup { AcceptOKMsg(p, p, bal[p][id], id) }
+                            /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = StartPhase]
+                            /\  UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep>>
                 ELSE    IF (LET Rmax == { n \in quorumOfMessages :
                                                 /\ n.body.phaseq = PreAcceptedPhase
                                                 /\ n.body.depq = n.body.initDepq }
@@ -424,7 +427,8 @@ HandleRecoverOK(p, id) ==
                 ELSE (  /\  ApplyAccept(p, p, bal[p][id], id, Nop, {})  
                         /\  msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc \ {p} } 
                                                               \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                        /\  UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep, recoveryPhase>> )
+                        /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = StartPhase]
+                        /\  UNCHANGED <<Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal, initCmd, initDep>> )
     /\  UNCHANGED <<submitted, initCoord, recovered, Ivar>>
 
 (***************************************************************************)
@@ -468,14 +472,16 @@ HandleValidateOK(p, id) ==
                 /\  ApplyAccept(p, p, bal[p][id], id, c, D)    
                 /\  msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, c, D) : q \in Proc \ {p} } 
                                                       \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                /\  UNCHANGED <<Ivar, recoveryPhase>>
+                /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = StartPhase]
+                /\  UNCHANGED <<Ivar>>
             ELSE IF 
                 ((\E x \in I : x[2] = CommittedPhase) \/ (CardinalityRmax[p][id] = Cardinality(Q) - E /\ \E x \in I : initCoord[x[1]] \notin Q))
                 THEN
                 /\  ApplyAccept(p, p, bal[p][id], id, Nop, {})     
                 /\  msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc  \ {p} } 
                                                       \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                /\  UNCHANGED <<Ivar, recoveryPhase>>
+                /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = StartPhase]
+                /\  UNCHANGED <<Ivar>>
             ELSE
                 /\  Ivar' = [Ivar EXCEPT ![p][id] = I]
                 /\  recoveryPhase' = [recoveryPhase EXCEPT ![p][id] = PostWaitingPhase]
