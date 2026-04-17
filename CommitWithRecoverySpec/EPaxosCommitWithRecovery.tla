@@ -18,13 +18,13 @@ Author: Alexandre SIRET
 
 CONSTANTS
     Proc,           \* set of processes
-    F,              \* max # crash failures
-    E,              \* e-fast parameter (E ≤ F)
+    F,              \* maximum number of crash failures
+    E,              \* e-fast parameter (E <= F)
     Cmd,            \* set of command payloads
-    Id,             \* command identifiers  
-    Nop,            \* special value representing a Nop command
-    Bottom,         \* special value for bottom command payload
-    NoProc,         \* special value representing no process
+    Id,             \* set of command identifiers  
+    Nop,            \* a special value representing a Nop command
+    Bottom,         \* a special value representing no command payload
+    NoProc,         \* a special value representing no process
     NumberOfRecoveryAttempts \* maximum number of recovery attempts per process and command to avoid state-space explosion
 
 N == Cardinality(Proc)
@@ -86,25 +86,25 @@ WaitingMsg(p, q, id, k) ==
     Message(TypeWaiting, p, q, [ id |-> id, k |-> k])
 
 VARIABLES
-    bal,           \* bal[p][id] = current ballot known by process p for command id
-    phase,         \* phase[p][id] ∈ {InitialPhase,PreAcceptedPhase,AcceptedPhase,CommittedPhase}
-    cmd,           \* cmd[p][id] = command payload at p
-    initCmd,       \* initCmd[p][id] = payload received in PreAccept
-    initDep,       \* initDep[p][id] = dependencies sent by the initial coordinator
-    dep,           \* dep[p][id] = dependency set at p for command id
-    abal,          \* abal[p][id] = the last ballot where p accepted a slow path value
-    msgs,          \* set of network messages
-    submitted,     \* set of submitted ids
-    initCoord,     \* initCoord[id] = process that submitted id
-    recovered,     \* recovered[p][id] = counter of times recovery is invoked
-    \* The following variables are used to persist to local state in the RecoverOK part, which is split in 3 handlers in the TLA spec.
-    Ivar,          \* Ivar[p]][id] used to keep track of I set in validateOK handler, which we need in PostWaiting handler.
-    Qvar,          \* Qvar[p][id] and CardinalityRmax[p][id] : temporary variables used in recoverOK handler to avoid having to pass what is local state in messages,
-    Cvar,
-    Dvar,
-    recoveryAttemptBal, \* bal of the current recovery attempt for [p][id]
-    CardinalityRmax,    \* they only appear because I have the split the pseudocode of RecoverOK in 3 handlers and these local variables are lost from one handler to the other.    
-    postWaitingFlag     
+    msgs,               \* set of network messages
+    submitted,          \* set of submitted ids
+    initCoord,          \* initCoord[id] = process that submitted id
+    phase,              \* phase[p][id] ∈ {InitialPhase,PreAcceptedPhase,AcceptedPhase,CommittedPhase}
+    bal,                \* bal[p][id] = current ballot known by process p for command id
+    abal,               \* abal[p][id] = the last ballot where p accepted a slow path value
+    initCmd,            \* initCmd[p][id] = payload received in PreAccept
+    cmd,                \* cmd[p][id] = command payload at p
+    initDep,            \* initDep[p][id] = dependencies sent by the initial coordinator
+    dep,                \* dep[p][id] = dependency set at p for command id
+    recovered,          \* recovered[p][id] = counter of times recovery is invoked
+    \* The following variables are used to persist to local state in the RecoverOK handler, which is split into 3 in the TLA spec:
+    Qvar,               \* Qvar[p][id] = Q in the RecoverOK handler
+    Cvar,               \* Cvar[p][id] = c in the RecoverOK handler
+    Dvar,               \* Cvar[p][id] = D in the RecoverOK handler
+    recoveryAttemptBal, \* recoveryAttemptBal[p][id] = the ballot of the current recovery attempt for p and id
+    Ivar,               \* Ivar[p][id] = I in the RecoverOK handler
+    CardinalityRmax,    \* CardinalityRmax[p][id] = |R_max| in the RecoverOK handler
+    postWaitingFlag
 
 vars ==
     << bal, abal, cmd, initCmd, dep, initDep, phase, msgs, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal >>
@@ -114,22 +114,22 @@ vars ==
 (***************************************************************************)
 
 Init ==
+    /\ msgs = {}
+    /\ submitted = {}
+    /\ initCoord = [id \in Id |-> NoProc]
+    /\ phase = [p \in Proc |-> [id \in Id |-> InitialPhase]]
     /\ bal = [p \in Proc |-> [id \in Id |-> 0]]
     /\ abal = [p \in Proc |-> [id \in Id |-> 0]]
-    /\ cmd = [p \in Proc |-> [id \in Id |-> Bottom]]
     /\ initCmd = [p \in Proc |-> [id \in Id |-> Bottom]]
-    /\ dep = [p \in Proc |-> [id \in Id |-> {}]]
+    /\ cmd = [p \in Proc |-> [id \in Id |-> Bottom]]
     /\ initDep = [p \in Proc |-> [id \in Id |-> {}]]
-    /\ phase = [p \in Proc |-> [id \in Id |-> InitialPhase]]
-    /\ initCoord = [id \in Id |-> NoProc]
-    /\ submitted = {}
+    /\ dep = [p \in Proc |-> [id \in Id |-> {}]]
     /\ recovered = [p \in Proc |-> [id \in Id |-> 0]]
-    /\ msgs = {}
-    /\ Ivar = [p \in Proc |-> [id \in Id |-> {}]]
     /\ Qvar = [p \in Proc |-> [id \in Id |-> {}]]
-    /\ Dvar = [p \in Proc |-> [id \in Id |-> {}]]
     /\ Cvar = [p \in Proc |-> [id \in Id |-> Bottom]]
+    /\ Dvar = [p \in Proc |-> [id \in Id |-> {}]]
     /\ recoveryAttemptBal = [p \in Proc |-> [id \in Id |-> 0]]
+    /\ Ivar = [p \in Proc |-> [id \in Id |-> {}]]
     /\ CardinalityRmax = [p \in Proc |-> [id \in Id |-> 0]]
     /\ postWaitingFlag = [p \in Proc |-> [id \in Id |-> FALSE]]
 
@@ -164,13 +164,13 @@ SeenIds(p) ==
 (* When received PreAccept (lines 12–17)                                   *)
 (***************************************************************************)
 ApplyPreAccept(p, q, id, c, D) ==
-    /\  bal[p][id] = 0
-    /\  phase[p][id] = InitialPhase
-    /\  cmd'     = [cmd     EXCEPT ![p][id] = c]
-    /\  initCmd' = [initCmd EXCEPT ![p][id] = c]
-    /\  initDep' = [initDep EXCEPT ![p][id] = D]
-    /\  LET Dfinal == D \cup ConflictingIds(p, c)
-        IN  dep' = [dep EXCEPT ![p][id] = Dfinal]
+    /\ bal[p][id] = 0
+    /\ phase[p][id] = InitialPhase
+    /\ cmd'     = [cmd     EXCEPT ![p][id] = c]
+    /\ initCmd' = [initCmd EXCEPT ![p][id] = c]
+    /\ initDep' = [initDep EXCEPT ![p][id] = D]
+    /\ LET Dfinal == D \cup ConflictingIds(p, c)
+       IN  dep' = [dep EXCEPT ![p][id] = Dfinal]
     /\ phase' = [phase EXCEPT ![p][id] = PreAcceptedPhase]
 
 (***************************************************************************)
@@ -222,32 +222,34 @@ ComputeI(p, id, c, D) ==  {<<id2, phase[p][id2]>> : id2 \in
 
 (***************************************************************************)
 (* Message handling actions                                                *)
+(* Self-addressed messages are handled immediately, hence the calls to     *)
+(* Apply functions below                                                   *)
 (***************************************************************************)
 
 (***************************************************************************)
 (* Submit (lines 8–10)                                                     *)
 (***************************************************************************)
 Submit(p, id, c) ==
-    /\  id \notin submitted
-    /\  submitted' = submitted \cup {id}
-    /\  initCoord' = [initCoord EXCEPT ![id] = p]
-    /\  LET D0 == ConflictingIds(p, c)
-        IN
-        /\ ApplyPreAccept(p, p, id, c, D0) \* Apply the self sent message immediately, and then send the preAcceptOk response as well.
-        /\ msgs' = msgs \cup { PreAcceptMsg(p, q, id, c, D0) : q \in Proc \ {p} } 
-                        \cup { PreAcceptOKMsg(p, p, id, D0) }
-    /\  UNCHANGED <<bal, abal, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>> 
+    /\ id \notin submitted
+    /\ submitted' = submitted \cup {id}
+    /\ initCoord' = [initCoord EXCEPT ![id] = p]
+    /\ LET D0 == ConflictingIds(p, c)
+       IN
+       /\ ApplyPreAccept(p, p, id, c, D0)
+       /\ msgs' = msgs \cup { PreAcceptMsg(p, q, id, c, D0) : q \in Proc \ {p} } 
+                       \cup { PreAcceptOKMsg(p, p, id, D0) }
+    /\ UNCHANGED <<bal, abal, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>> 
 
 (***************************************************************************)
 (* HandlePreAccept (lines 11–18)                                           *)
 (***************************************************************************)                    
 HandlePreAccept(m) ==
-    /\  m.type = TypePreAccept
-    /\  LET Dfinal == m.body.D \cup ConflictingIds(m.to, m.body.c)
-        IN  
-        /\  ApplyPreAccept(m.to, m.from, m.body.id, m.body.c, m.body.D)
-        /\  msgs' = (msgs \ {m}) \cup { PreAcceptOKMsg(m.to, m.from, m.body.id, Dfinal) }
-    /\  UNCHANGED <<abal, submitted, bal, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>>
+    /\ m.type = TypePreAccept
+    /\ LET Dfinal == m.body.D \cup ConflictingIds(m.to, m.body.c)
+       IN  
+       /\  ApplyPreAccept(m.to, m.from, m.body.id, m.body.c, m.body.D)
+       /\  msgs' = (msgs \ {m}) \cup { PreAcceptOKMsg(m.to, m.from, m.body.id, Dfinal) }
+    /\ UNCHANGED <<abal, submitted, bal, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>>
 
 (***************************************************************************)
 (* HandlePreAcceptOK (lines 19–25)                                         *)
@@ -268,13 +270,13 @@ HandlePreAcceptOK(p, id) ==
                 { m \in quorumOfMessages : m.body.Dq = initDep[p][id] }
             IN
             IF IsFastQuorumSized(largestFastQuorum) THEN
-                    /\ ApplyCommit(p, p, 0, id, cmd[p][id], initDep[p][id]) \* Apply Commit, no response message to add
+                    /\ ApplyCommit(p, p, 0, id, cmd[p][id], initDep[p][id])
                     /\ msgs' = (msgs \ largestFastQuorum) \cup { CommitMsg(p, q, 0, id, cmd[p][id], initDep[p][id]) : q \in Proc \ {p} }
                     /\ UNCHANGED bal
             ELSE        
                     LET Dfinal == UNION { m.body.Dq : m \in quorumOfMessages }
                     IN
-                    /\ ApplyAccept(p, p, 0, id, cmd[p][id], Dfinal) \* Apply accpet, and add the response message that the self sent Accept message would have produced
+                    /\ ApplyAccept(p, p, 0, id, cmd[p][id], Dfinal)
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, 0, id, cmd[p][id], Dfinal) : q \in Proc \ {p} }
                                                          \cup { AcceptOKMsg(p, p, 0, id) }
     /\ UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, postWaitingFlag, recoveryAttemptBal>>
@@ -320,7 +322,7 @@ HandleCommit(m) ==
 (***************************************************************************)
 StartRecover(p, id) ==
     /\ phase[p][id] # CommittedPhase
-    \* We count the number of times a process has tried to recover a command to avoid model checker exploding
+    \* We count the number of times a process has tried to recover a command to avoid state-space explosion
     /\ recovered[p][id] < NumberOfRecoveryAttempts
     /\ id \in SeenIds(p)
     /\ postWaitingFlag' = [postWaitingFlag EXCEPT ![p][id] = FALSE] 
@@ -467,7 +469,6 @@ HandleValidateOK(p, id) ==
                     /\ ApplyAccept(p, p, bal[p][id], id, Nop, {})     
                     /\ msgs' = (msgs \ quorumOfMessages) \cup { AcceptMsg(p, q, bal[p][id], id, Nop, {}) : q \in Proc  \ {p} } 
                                                          \cup { AcceptOKMsg(p, p, bal[p][id], id) }
-                        
                     /\ UNCHANGED <<Ivar, postWaitingFlag>>
                 ELSE
                     /\ Ivar' = [Ivar EXCEPT ![p][id] = I]
@@ -477,7 +478,7 @@ HandleValidateOK(p, id) ==
     /\ UNCHANGED <<initCmd, initDep, submitted, initCoord, recovered, Qvar, CardinalityRmax, Cvar, Dvar, recoveryAttemptBal>>
 
 (***************************************************************************)
-(* HandlePostWaitingMsg (lines 69–80)                                      *)
+(* HandlePostWaiting (lines 69–80)                                         *)
 (***************************************************************************)
                     
 HandlePostWaiting(p, id) ==
@@ -591,10 +592,9 @@ Next ==     \/ \E m \in msgs :
                 \/ HandleCommit(m) 
                 \/ HandleRecover(m) 
                 \/ HandleValidate(m) 
-
             \/ \E p \in Proc, id \in Id :
-                \/ Submit(p, id, id) \*use id as the payload
-                \/ StartRecover(p, id) 
+                \/ Submit(p, id, id) \* Use id as the payload for model checking
+                \/ StartRecover(p, id)
                 \/ HandlePreAcceptOK(p, id) 
                 \/ HandleValidateOK(p, id) 
                 \/ HandlePostWaiting(p, id) 
