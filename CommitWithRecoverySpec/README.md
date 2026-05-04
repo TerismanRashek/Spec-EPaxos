@@ -1,21 +1,19 @@
 # EPaxosRecovery
 
-This folder contains the **full EPaxos specification**, including:
+A TLA+ specification of the EPaxos* protocol from the following OPODIS'25 paper:
+Making Democracy Work: Fixing and Simplifying Egalitarian Paxos.
+Fedor Ryabinin, Alexey Gotsman, and Pierre Sutra.
+https://doi.org/10.4230/LIPIcs.OPODIS.2025.22 (conference version)
+https://arxiv.org/pdf/2511.02743 (extended version)
 
-- commit protocol
-- recovery protocol
-- ballot escalation
-- validation and waiting logic
+This file contains the specification of the commit and recovery protocols,
+corresponding to Figures 3 and 5 in the paper.
 
-This is the complete and most complex spec in the repository.
-
-### Role in the project
-
-This part models the full commit with recovery part of the protocol, the idea is to run the model checker on interesting configurations to add a layer of certainty that the protocol is correct. The amount of states that the model checker must go through increases exponentially, anything greater than 2 will probably not resolve. Random exploration allows us to test larger configurations, but without certainty.
+Author: Alexandre SIRET
 
 ### Pratical elements
 
-You can change the config using the .cfg file and run the spec using java.
+You can change the initial configuration using the .cfg and ExtraConfiguration files.
 
 
 
