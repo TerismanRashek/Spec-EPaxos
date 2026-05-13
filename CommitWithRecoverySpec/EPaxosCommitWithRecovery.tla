@@ -184,7 +184,7 @@ ApplyPreAccept(p, q, id, c, D) ==
 (***************************************************************************)
 ApplyAccept(p, q, b, id, c, D) ==
     /\  bal[p][id] <= b
-    /\  (bal[p][id] = b => phase[p][id] # CommittedPhase)
+    /\  (abal[p][id] = b => phase[p][id] # CommittedPhase)
     /\  bal'   = [bal    EXCEPT ![p][id] = b]
     /\  abal'  = [abal   EXCEPT ![p][id] = b]
     /\  cmd'   = [cmd    EXCEPT ![p][id] = c]
@@ -241,9 +241,9 @@ Submit(p, id, c) ==
     /\  initCoord' = [initCoord EXCEPT ![id] = p]
     /\  LET D0 == ConflictingIds(p, c)
         IN
-        /\   ApplyPreAccept(p, p, id, c, D0)
-        /\   msgs' = msgs \cup { PreAcceptMsg(p, q, id, c, D0) : q \in Proc \ {p} } 
-                        \cup { PreAcceptOKMsg(p, p, id, D0) }
+        /\  ApplyPreAccept(p, p, id, c, D0)
+        /\  msgs' = msgs \cup { PreAcceptMsg(p, q, id, c, D0) : q \in Proc \ {p} } 
+                         \cup { PreAcceptOKMsg(p, p, id, D0) }
     /\  UNCHANGED <<bal, abal, recovered, Qvar, CardinalityRmax, Cvar, Dvar, Ivar, recoveryAttemptBal, recoveryPhase>> 
 
 (***************************************************************************)
@@ -326,12 +326,13 @@ HandleCommit(m) ==
 (* StartRecover (lines 43–45)                                              *)
 (***************************************************************************)
 StartRecover(p, id) ==
+    /\  phase[p][id] # CommittedPhase
     \*  We count the number of times a process has tried to recover a command to avoid state-space explosion
     /\  recovered[p][id] < NumberOfRecoveryAttempts
     /\  id \in SeenIds(p)
     /\  recovered' = [recovered EXCEPT ![p][id] = recovered[p][id] + 1]
     \*  Ballots owned by p are of the form k*N + p
-    /\  LET  b == IF bal[p][id] = 0 THEN p ELSE bal[p][id] + Cardinality(Proc)
+    /\  LET  b == ((bal[p][id] - p + N) \div N) * N + p
         IN
         /\  ApplyRecover(p, p, b, id)
         /\  msgs' = msgs \cup { RecoverMsg(p, q, b, id) : q \in Proc \ {p} } 
@@ -570,6 +571,17 @@ Visibility ==
     => \/  id \in dep[q][id2]
        \/  id2 \in dep[p][id]
 
+AllCommandsCommitted ==
+    \A id \in Id :
+            \A p \in Proc :
+                phase[p][id] = CommittedPhase
+
+WitnessAllCommitted == ~AllCommandsCommitted
+
+Liveness == <>AllCommandsCommitted
+
+
+
 TypeInv ==
     /\  \A p \in Proc, id \in Id :
         /\  bal[p][id] >= 0 
@@ -610,7 +622,9 @@ Next == \/ \E m \in msgs :
             \/  HandleRecoverOK(p, id) 
             \/  HandleAcceptOK(p, id)
 
+Fairness == WF_vars(Next)
+
 Spec ==
-    Init /\ [][Next]_<<vars>>
+    Init /\ [][Next]_<<vars>> /\ Fairness
 
 =============================================================================
