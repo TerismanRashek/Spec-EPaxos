@@ -326,7 +326,6 @@ HandleCommit(m) ==
 (* StartRecover (lines 43–45)                                              *)
 (***************************************************************************)
 StartRecover(p, id) ==
-    /\  phase[p][id] # CommittedPhase
     \*  We count the number of times a process has tried to recover a command to avoid state-space explosion
     /\  recovered[p][id] < NumberOfRecoveryAttempts
     /\  id \in SeenIds(p)
